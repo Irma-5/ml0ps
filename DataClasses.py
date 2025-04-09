@@ -23,12 +23,13 @@ class DataLoader:
         self.n_qtr = n_qtr
         self.n = None
         self.step = 0
+        self.stats=None
 
     def extract(self, n_qtr=None, start_date=None, end_date=None):
         patt = r"historical_data_\d{4}\.zip"
         patt2 = r"historical_data_(\d{4})\/historical_data_\1Q[1-4]\.zip"
         patt3 = r"historical_data_\d{4}Q[1-4]\.zip"
-        with open('DataLoader/types.pickle', 'rb') as f:
+        with open('types.pickle', 'rb') as f:
             dct = pickle.load(f)
             categ, orig_cols, orig_dtypes, svc_cols, svc_dtypes = dct['categ'], dct['orig cols'], dct['orig dtypes'], \
                                                                   dct['svc_cols'], dct['svc_dtypes']
@@ -112,13 +113,20 @@ class DataLoader:
             ft = self.extract(n_quaters, start_date=start_date_, end_date=end_date_)
             ft.to_csv(os.path.join(new_path, f"ft_dataset_{y}.csv"))
 
-    def add_batch(self, df):
+    def add_batch(self):
         if self.n is None:
             l = len(os.listdir('datasets'))
             self.n = l - 1 if l else 0
         if self.step < self.n:
-            new = pd.read_csv(os.path.join(self.datapath, f"ft_dataset_{self.year + 1 + self.step}.csv"))
-            new = pd.concat([df, new[df.columns]])
+            df = pd.read_csv(os.path.join(self.datapath, f"train_dataset.csv"))
+            if self.step > 0:
+                new = pd.read_csv(os.path.join(self.datapath, f"ft_dataset_{self.year + 1 + self.step}.csv"))
+                new = pd.concat([df, new[df.columns]])
+                new = self.create_time_parameter(new)
+                print(f'{self.year + self.step}-01-01')
+                new = new[new.period >= f'{self.year + self.step}-01-01']
+            else:
+                new = self.create_time_parameter(df)
             self.step += 1
             return new
         return None
@@ -145,21 +153,28 @@ class DataLoader:
         return df[df.time >= 0]
 
     def first(self):
-        return pd.read_csv('datasets/train_dataset.csv')
+        df = self.add_batch()
+        dq = DataQualityEvaluator()
+        self.stats = dq.make_stats(df, p=False)
+        df, counts = dq.fix_data(df, first_call=True)
+        return df
 
     def step_(self, df, verbose=0):
         if verbose==2: print('updating data...')
-        df_ = self.add_batch(df)
-        df_ = self.create_time_parameter(df_)
+        cols = df.columns
+        df_ = self.add_batch()
         if df_ is None: raise ValueError('step is out of range')
         if verbose==2: print('evaluating data quality...')
         dq = DataQualityEvaluator()
         result = dq.make_stats(df_, p=(verbose==1))
         if verbose==2: print('cleaning data...')
-        df_, counts = dq.fix_data(df_)
+        df_, counts = dq.fix_data(df_, first_call=False, stats=self.stats)
+        df_ = df_[list(set(df_.columns) & set(cols))]
         if verbose==2:
             print(f'{counts} bad column(s) was removed')
             print(f'\n updating completed')
+        self.stats[0] += result[0]
+        self.stats[1] += result[1]
         return df_
 
 
@@ -227,24 +242,24 @@ class DataQualityEvaluator:
         return lst
 
     def make_stats(self, df, p=False):
-        dct = {}
-        f = open('DataLoader/stats.txt', 'w')
+        dct = [df.isna().sum(), df.shape[0]]
+        f = open('stats.txt', 'w')
         c = self.completeness(df)
-        dct['completeness'] = c
+        #dct['completeness'] = c
         f.write('completeness:\n')
         if p: print('completeness:')
         for k, v in c.items():
             f.write(f'    {k}: {v}\n')
             if p: print(f'    {k}: {v}')
         c = self.validity(df)
-        dct['validity'] = c
+        #dct['validity'] = c
         f.write('\nvalidity:\n')
         if p: print('\nvalidity:')
         c = self.validity(df)
         for k, v in c.items():
             f.write(f'    {k:<25} - {v}\n')
             if p: print(f'    {k:<25} - {v}')
-        dct['timeliness'] = {'timeliness': True}
+        #dct['timeliness'] = {'timeliness': True}
         f.write('\ntimeliness: True')
         if p: print('\ntimeliness: True')
         f.close()
@@ -252,9 +267,14 @@ class DataQualityEvaluator:
             pickle.dump(dct, f)
         return dct
 
-    def fix_data(self, a):
+    def fix_data(self, a, first_call=False, stats=None):
+        if not first_call:
+            isnans = (a.isna().sum() + stats[0]) / (a.shape[0]+stats[1])
+        else:
+            isnans = a.isna().sum() / a.shape[0]
+        #print(isnans)
         cols_num = len(a.columns)
-        cols1 = a.isna().sum()[(a.isna().sum() / a.shape[0]) < 0.4].index
+        cols1 = a.isna().sum()[isnans < 0.4].index
         d = self.validity(a)
         cols2 = []
         for k, v in d.items():
@@ -263,6 +283,14 @@ class DataQualityEvaluator:
         return a, cols_num-len(a.columns)
 
 
-# data_loader = DataLoader()
-# df1 = data_loader.first()
-# df1 = data_loader.stepp(df1, verbose=2)
+data_loader = DataLoader()
+df1 = data_loader.first() # загрузка train датасета
+print(df1.shape)
+df1 = data_loader.step_(df1, verbose=2) # новая порция данных за 2010-2011 (кредиты, начатые в 1999 и закрытые в 2010-2011)
+df1 = data_loader.step_(df1, verbose=2)
+df1 = data_loader.step_(df1, verbose=2)
+df1 = data_loader.step_(df1, verbose=2)
+df1 = data_loader.step_(df1, verbose=2)
+df1 = data_loader.step_(df1, verbose=2)
+df1 = data_loader.step_(df1, verbose=2)
+print(df1.shape)

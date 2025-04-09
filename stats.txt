@@ -1,0 +1,26 @@
+completeness:
+    full: 0.10674250220523375
+    cols_max: 1.0
+    rows_max: 0.13157894736842105
+
+validity:
+    credit_score              - False
+    first_time_homebuyer_flag - True
+    MI_%                      - True
+    units_numb                - True
+    occupancy_status          - True
+    CLTV                      - True
+    DTI_ratio                 - True
+    LTV                       - True
+    channel                   - True
+    PPM_flag                  - True
+    amortization_type         - True
+    property_type             - True
+    loan_purpose              - True
+    borrowers_num             - True
+    program_ind               - True
+    property_val_method       - True
+    int_only_flag             - True
+    MI_cancel_flag            - True
+
+timeliness: True
