@@ -11,7 +11,7 @@ import re
 import io
 from typing import Dict
 import warnings
-from DataClasses_пон import DataLoader
+from DataClasses import DataLoader
 # data_loader = DataLoader()
 # df1 = data_loader.first() # загрузка train датасета
 # print(df1.shape)
@@ -34,10 +34,10 @@ import logging
 import xgboost as xgb
 import pandas as pd
 from sklearn.model_selection import train_test_split
-from preprocessing_пон import CreditDataPreprocessor
+from preprocessing import CreditDataPreprocessor
 import json
 from sklearn.model_selection import RandomizedSearchCV
-from model_пон import CreditModel
+from model import CreditModel
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__) # чтобы всё отображались
@@ -146,7 +146,7 @@ except Exception as e:
 
 
 ###Validation
-from validation_пон import ModelValidator
+from validation import ModelValidator
 config = {
         'model_storage': './test_models',
         'reports_dir': './test_reports',
