@@ -21,8 +21,9 @@ model_artifacts
 
 ## Установка
 ```bash
-git clone <репозиторий>
-cd <папка проекта>
+mkdir mlops
+cd mlops
+git clone https://github.com/Irma-5/ml0ps
 pip install -r requirements.txt
 ```
 
