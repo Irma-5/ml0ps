@@ -24,17 +24,9 @@ class DataLoader:
         self.types_path = os.path.join(os.path.realpath(BASE_DIR), 'types.pickle')
         self.datapath = os.path.join(os.path.realpath(BASE_DIR), 'datasets')
         self.year = params.get("year_to_split", 2010)
-        self.n_qtr = params.get("n_qtr", 1)
-
-        # self.raw_path = "raw_data" if path is None else os.path.join(path, 'raw_data')
-        # self.datapath = 'datasets' if path is None else os.path.join(path, 'datasets')
-        # self.year = year_to_split
-        # self.n_qtr = n_qtr
-        self.n = None
         self.step = 0
-        self.stats = None
 
-    def extract(self, verbose=0):
+    def _extract(self, verbose=0):
         with open(self.types_path, 'rb') as f:
             dct = pickle.load(f)
             categ, orig_cols, orig_dtypes, svc_cols, svc_dtypes = dct['categ'], dct['orig cols'], dct['orig dtypes'], \
@@ -103,24 +95,26 @@ class DataLoader:
         """
         self.n = 0
         os.makedirs(self.datapath, exist_ok=True)
-        self.extract(verbose=verbose)
+        self._extract(verbose=verbose)
 
-    def add_batch(self):
+    def _add_batch(self):
         if self.step < self.num_batches:
             df = pd.read_csv(os.path.join(self.datapath, r"train_dataset.csv"))
             if self.step > 0:
                 new = pd.read_csv(os.path.join(self.datapath, f"batch_{self.step}.csv"))
+                min_ = new.period.min()
                 new = pd.concat([df, new[df.columns]])
-                new = self.create_time_parameter(new)
+                new = self._create_time_parameter(new) # объединяли с train чтобы правильно рассчитать time
                 print(f'{self.year + self.step}-01-01')
-                new = new[new.period >= f'{self.year + self.step}-01-01']
+                new = new[new.period >= min_] # оставили только сам батч
             else:
-                new = self.create_time_parameter(df)
+                new = self._create_time_parameter(df)
             self.step += 1
             return new
+        print('no new batches left')
         return None
 
-    def create_time_parameter(self, df):
+    def _create_time_parameter(self, df):
         df.zero_balance_code.fillna(-1, inplace=True)
         df['time'] = None
         df['cens'] = (df.zero_balance_code != -1)
@@ -141,9 +135,9 @@ class DataLoader:
         df = df[~start]
         return df[df.time >= 0]
 
-    def first(self, verbose=0):
+    def _first(self, verbose=0):
         if verbose==2: print('reading train data...')
-        df = self.add_batch()
+        df = self._add_batch()
         dq = DataQualityEvaluator()
         if verbose == 2: print('evaluating data quality...')
         self.stats = dq.make_stats(df, verbose=(verbose >= 1))
@@ -154,9 +148,9 @@ class DataLoader:
             print(f'\n done')
         return df
 
-    def step_(self, verbose=0):
+    def _step(self, verbose=0):
         if verbose == 2: print('reading next batch...')
-        df_ = self.add_batch()
+        df_ = self._add_batch()
         if df_ is None: return None
         if verbose == 2: print('evaluating data quality...')
         dq = DataQualityEvaluator()
@@ -173,8 +167,8 @@ class DataLoader:
 
     def get_data(self, verbose=0):
         if self.step == 0:
-            return self.first(verbose=verbose)  # загрузка train датасета
-        return self.step_(verbose=verbose)
+            return self._first(verbose=verbose)  # загрузка train датасета
+        return self._step(verbose=verbose)
 
 
 class DataQualityEvaluator:
@@ -282,7 +276,7 @@ class DataQualityEvaluator:
         return a, cols_num - len(a.columns)
 
 
-data_loader = DataLoader(DATA_LOADER_PARAMS)
-#data_loader.create_datasets(1)
-for _ in range(2):
-      df = data_loader.get_data(verbose=2)
+# data_loader = DataLoader(DATA_LOADER_PARAMS)
+# #data_loader.create_datasets(1)
+# for _ in range(2):
+#       df = data_loader.get_data(verbose=2)
