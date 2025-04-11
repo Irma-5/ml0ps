@@ -12,6 +12,7 @@ import warnings
 
 
 # logging.basicConfig(filename="training.log", level=logging.INFO, format="%(asctime)s - %(message)s")
+from DataLoader.config import DATA_LOADER_PARAMS
 
 
 class DataLoader:
@@ -19,8 +20,8 @@ class DataLoader:
         warnings.filterwarnings("ignore")
         self.path = params.get("path", ".")
         self.num_batches = params.get('num_batches', 13)
-        self.raw_path = os.path.join(self.path, 'raw_data')
-        self.datapath = os.path.join(self.path, 'datasets')
+        self.raw_path = os.path.join(os.path.realpath(''), 'raw_data')
+        self.datapath = os.path.join(os.path.realpath(''), 'datasets')
         self.year = params.get("year_to_split", 2010)
         self.n_qtr = params.get("n_qtr", 1)
 
@@ -108,7 +109,7 @@ class DataLoader:
             l = len(os.listdir('datasets'))
             self.n = l - 1 if l else 0
         if self.step < self.n:
-            df = pd.read_csv(os.path.join(self.datapath, f"train_dataset.csv"))
+            df = pd.read_csv(os.path.join(self.datapath, r"train_dataset.csv"))
             if self.step > 0:
                 new = pd.read_csv(os.path.join(self.datapath, f"batch_{self.step}.csv"))
                 new = pd.concat([df, new[df.columns]])
@@ -283,7 +284,7 @@ class DataQualityEvaluator:
         return a, cols_num - len(a.columns)
 
 
-# data_loader = DataLoader(DATA_LOADER_PARAMS)
-# # data_loader.create_datasets(1)
-# for _ in range(2):
-#      df = data_loader.get_data(verbose=2)
+data_loader = DataLoader(DATA_LOADER_PARAMS)
+data_loader.create_datasets(1)
+for _ in range(2):
+      df = data_loader.get_data(verbose=2)
