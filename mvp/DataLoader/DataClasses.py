@@ -18,10 +18,11 @@ from DataLoader.config import DATA_LOADER_PARAMS
 class DataLoader:
     def __init__(self, params):
         warnings.filterwarnings("ignore")
-        self.path = params.get("path", ".")
+        BASE_DIR = os.path.dirname(os.path.abspath(__file__))
         self.num_batches = params.get('num_batches', 13)
-        self.raw_path = os.path.join(os.path.realpath(''), 'raw_data')
-        self.datapath = os.path.join(os.path.realpath(''), 'datasets')
+        self.raw_path = os.path.join(os.path.realpath(BASE_DIR), 'raw_data')
+        self.types_path = os.path.join(os.path.realpath(BASE_DIR), 'types.pickle')
+        self.datapath = os.path.join(os.path.realpath(BASE_DIR), 'datasets')
         self.year = params.get("year_to_split", 2010)
         self.n_qtr = params.get("n_qtr", 1)
 
@@ -34,7 +35,7 @@ class DataLoader:
         self.stats = None
 
     def extract(self, verbose=0):
-        with open('types.pickle', 'rb') as f:
+        with open(self.types_path, 'rb') as f:
             dct = pickle.load(f)
             categ, orig_cols, orig_dtypes, svc_cols, svc_dtypes = dct['categ'], dct['orig cols'], dct['orig dtypes'], \
                                                                   dct['svc_cols'], dct['svc_dtypes']
@@ -105,10 +106,7 @@ class DataLoader:
         self.extract(verbose=verbose)
 
     def add_batch(self):
-        if self.n is None:
-            l = len(os.listdir('datasets'))
-            self.n = l - 1 if l else 0
-        if self.step < self.n:
+        if self.step < self.num_batches:
             df = pd.read_csv(os.path.join(self.datapath, r"train_dataset.csv"))
             if self.step > 0:
                 new = pd.read_csv(os.path.join(self.datapath, f"batch_{self.step}.csv"))
@@ -285,6 +283,6 @@ class DataQualityEvaluator:
 
 
 data_loader = DataLoader(DATA_LOADER_PARAMS)
-data_loader.create_datasets(1)
+#data_loader.create_datasets(1)
 for _ in range(2):
       df = data_loader.get_data(verbose=2)
