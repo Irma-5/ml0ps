@@ -11,19 +11,18 @@ import re
 import io
 from typing import Dict
 import warnings
-from DataClasses import DataLoader
-# data_loader = DataLoader()
-# df1 = data_loader.first() # загрузка train датасета
-# print(df1.shape)
-# df1 = data_loader.step_(df1, verbose=2) # новая порция данных за 2010-2011 (кредиты, начатые в 1999 и закрытые в 2010-2011)
-# df1 = data_loader.step_(df1, verbose=2)
-# df1 = data_loader.step_(df1, verbose=2)
-# df1 = data_loader.step_(df1, verbose=2)
-# df1 = data_loader.step_(df1, verbose=2)
-# df1 = data_loader.step_(df1, verbose=2)
-# df1 = data_loader.step_(df1, verbose=2)
-# df1.to_csv('kal.csv', index=False)
-# print(df1.shape)
+from DataLoader.DataClasses import DataLoader
+from DataLoader.config import DATA_LOADER_PARAMS
+data_loader = DataLoader(DATA_LOADER_PARAMS)
+initial_train_df = data_loader.get_data()  # Initial training dataset
+print(f"Initial training data shape: {initial_train_df.shape}")
+
+# Collect subsequent batches for fine-tuning
+fine_tune_batches = []
+for _ in range(DATA_LOADER_PARAMS['num_batch']):  
+    batch = data_loader.get_data(verbose=2)
+    fine_tune_batches.append(batch)
+    print(f"Loaded fine-tuning batch {len(fine_tune_batches)} with shape: {batch.shape}")
 
 import sys
 import numpy as np
@@ -56,13 +55,14 @@ preprocessor = CreditDataPreprocessor(config)
 
 try:
     # Загрузка и обработка данных
-    raw_df = pd.read_csv('./kal.csv')
+    # raw_df = pd.read_csv('./kal.csv')
+    raw_df = initial_train_df.copy()
     logging.info(f"Raw data shape: {raw_df.shape}")
     mid_index = len(raw_df) // 2
     # Разделяем DataFrame на две части
-    df1 = raw_df.iloc[:mid_index].reset_index(drop=True)
-    df2 = raw_df.iloc[mid_index:].reset_index(drop=True)
-    raw_df = df1
+    # df1 = df.iloc[:mid_index].reset_index(drop=True)
+    # df2 = df.iloc[mid_index:].reset_index(drop=True)
+    # raw_df = df1
     # Препроцессинг данных
     X_processed, y = preprocessor.fit_transform(raw_df)
     config['n_features'] = X_processed.shape[1]  # Обновляем количество признаков
@@ -70,7 +70,8 @@ try:
     X_train, X_test, y_train, y_test = train_test_split(
         X_processed, y,
         test_size=config['test_size'],
-        random_state=config['random_state'], shuffle=False
+        random_state=config['random_state'], 
+        shuffle=False
     )
     
     # Сохранение препроцессора
@@ -125,26 +126,49 @@ try:
     model.save_model()
     
     # Пример дообучения с новыми данными
-    logging.info("\nPreparing update batch...")
-    X_update, y_update = preprocessor.transform(df2), df2[config['target_column']].values
+#     logging.info("\nPreparing update batch...")
+#     X_update, y_update = preprocessor.transform(df2), df2[config['target_column']].values
     
-    logging.info("Updating model...")
-    model.train(X_test, y_test, update=True)
+#     logging.info("Updating model...")
+#     model.train(X_test, y_test, update=True)
     
-    # Оценка после дообучения
-    updated_metrics = model.evaluate(X_test, y_test)
-    logging.info("\nMetrics after update:")
-    logging.info(f"MAE: {updated_metrics['mae']:.2f} months")
-    logging.info(f"R²: {updated_metrics['r2']:.4f}")
+#     # Оценка после дообучения
+#     updated_metrics = model.evaluate(X_test, y_test)
+#     logging.info("\nMetrics after update:")
+#     logging.info(f"MAE: {updated_metrics['mae']:.2f} months")
+#     logging.info(f"R²: {updated_metrics['r2']:.4f}")
     
-    # Сохранение итоговой модели
+#     # Сохранение итоговой модели
+#     model.save_model()
+#     logging.info("Final model saved successfully")
+# except Exception as e:
+#     logging.error(f"Pipeline failed: {str(e)}")
+#     sys.exit(1)
+    
+    for batch_idx, batch_df in enumerate(fine_tune_batches, 1):
+        logging.info(f"\nProcessing fine-tuning batch {batch_idx}/{len(fine_tune_batches)}")
+        
+        # Preprocess batch
+        X_update, y_update = preprocessor.transform(batch_df), batch_df[config['target_column']].values
+        
+        # Update model
+        logging.info("Updating model with new batch...")
+        model.train(X_update, y_update, update=True)
+        
+        # Evaluate after update
+        updated_metrics = model.evaluate(X_test, y_test)
+        logging.info(f"Metrics after batch {batch_idx} update:")
+        logging.info(f"MAE: {updated_metrics['mae']:.2f} months")
+        logging.info(f"R²: {updated_metrics['r2']:.4f}")
+
+    # Save final model
     model.save_model()
     logging.info("Final model saved successfully")
+
 except Exception as e:
     logging.error(f"Pipeline failed: {str(e)}")
     sys.exit(1)
-
-
+    
 ###Validation
 from validation import ModelValidator
 config = {
