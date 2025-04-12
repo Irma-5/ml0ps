@@ -23,6 +23,7 @@ model_artifacts
 ```bash
 mkdir mlops
 cd mlops
+cd ml0ps
 git clone https://github.com/Irma-5/ml0ps
 pip install -r requirements.txt
 ```
@@ -44,7 +45,13 @@ python pipeline_manager.py update --data path/to/new_data.csv
 ```bash
 python pipeline_manager.py summary
 ```
-
+### Изменение конфигурации данных напрямую
+Path указывает на папку в котором лежит config.py. В нем реализован словарь DATA_LOADER_PARAMS с парами path->str,year_to_split->int, num_batch->int. year_to_split>= 2000 и на момент реализации <=2023.
+```bash
+python script.py setconfig --param path --value "cofig_folder"
+python script.py setconfig --param year_to_split --value 2010
+python script.py setconfig --param num_batch --value 10
+```
 ## Структура артефактов
 ```
 model_artifacts/
