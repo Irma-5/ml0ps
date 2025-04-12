@@ -6,7 +6,7 @@ from pathlib import Path
 import logging
 from typing import Dict, Any
 from xgboost import XGBRegressor
-
+import re
 # Инициализация логирования
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
@@ -66,7 +66,39 @@ class PipelineManager:
             "metrics": self.metrics,
             "config": self.config
         }
+    
+    def update_config(param: str, value: str):
+        """Обновление параметров в DataLoader/config.py"""
+        config_path = Path("DataLoader/config.py")
+        try:
+            with open(config_path, 'r') as f:
+                lines = f.readlines()
 
+            pattern = re.compile(rf"^{param}\s*=\s*.*")
+            found = False
+            for i, line in enumerate(lines):
+                if pattern.match(line.strip()):
+                    if param in ['year_to_split', 'num_batch']:
+                        try:
+                            value_converted = int(value)
+                        except ValueError:
+                            raise ValueError(f"Значение {value} для параметра {param} должно быть целым числом")
+                        new_line = f"{param} = {value_converted}\n"
+                    else:
+                        new_line = f'{param} = "{value}"\n'
+                    lines[i] = new_line
+                    found = True
+                    break
+                
+            if not found:
+                raise ValueError(f"Параметр {param} не найден в config.py")
+
+            with open(config_path, 'w') as f:
+                f.writelines(lines)
+            logger.info(f"Параметр {param} успешно обновлен на {value}")
+        except Exception as e:
+            logger.error(f"Ошибка обновления конфига: {e}")
+            raise
 def main():
     parser = argparse.ArgumentParser(description="Credit Model Pipeline Manager")
     subparsers = parser.add_subparsers(dest='command')
@@ -82,10 +114,27 @@ def main():
     # Summary command
     subparsers.add_parser('summary', help='Get model summary')
 
+    #Config command
+    config_parser = subparsers.add_parser('setconfig', help='Обновление параметров конфигурации')
+    config_parser.add_argument('--param', 
+                               type=str, 
+                               required=True, 
+                               choices=['path', 'year_to_split', 'num_batch'],
+                               help='Название параметра для обновления')
+    config_parser.add_argument('--value',
+                              type=str,
+                              required=True,
+                              help='Новое значение параметра')
+    
     args = parser.parse_args()
     manager = PipelineManager()
     
     try:
+        if args.command == 'setconfig':
+            manager.update_config(args.param, args.value)
+        else:
+            manager.load_artifacts()
+
         manager.load_artifacts()
         if args.command == 'inference':
             result = manager.inference(args.data)
