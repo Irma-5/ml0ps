@@ -4,3 +4,4 @@ pandas==2.0.3
 mlflow==2.6.0
 python==3.12
 tqdm
+joblib==1.4.2
