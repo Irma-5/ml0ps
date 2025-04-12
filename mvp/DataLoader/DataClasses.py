@@ -280,3 +280,8 @@ class DataQualityEvaluator:
 # #data_loader.create_datasets(1)
 # for _ in range(2):
 #       df = data_loader.get_data(verbose=2)
+data_loader = DataLoader(DATA_LOADER_PARAMS)
+#data_loader.create_datasets(1)
+for _ in range(DATA_LOADER_PARAMS['num_batch']):
+      df = data_loader.get_data(verbose=2)
+
