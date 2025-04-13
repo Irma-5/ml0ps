@@ -2,8 +2,6 @@ import pickle
 import pandas as pd
 import numpy as np
 import os
-import matplotlib.pyplot as plt
-import seaborn as sns
 from datetime import datetime
 from zipfile import ZipFile
 from typing import List
@@ -14,6 +12,8 @@ import warnings
 from DataLoader.DataClasses import DataLoader
 from DataLoader.config import DATA_LOADER_PARAMS
 data_loader = DataLoader(DATA_LOADER_PARAMS)
+if not os.path.exists(r"DataLoader/datasets"):
+    data_loader.create_datasets(verbose=True)
 initial_train_df = data_loader.get_data()  # Initial training dataset
 print(f"Initial training data shape: {initial_train_df.shape}")
 
