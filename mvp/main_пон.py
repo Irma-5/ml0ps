@@ -149,6 +149,7 @@ try:
         logging.info(f"\nProcessing fine-tuning batch {batch_idx}/{len(fine_tune_batches)}")
         
         # Preprocess batch
+        batch_df = batch_df[batch_df['zero_balance_code'] == 1.0]
         X_update, y_update = preprocessor.transform(batch_df), batch_df[config['target_column']].values
         
         # Update model
