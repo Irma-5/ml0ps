@@ -125,26 +125,6 @@ try:
     logging.info(f"R²: {metrics['r2']:.4f}")
     model.save_model()
     
-    # Пример дообучения с новыми данными
-#     logging.info("\nPreparing update batch...")
-#     X_update, y_update = preprocessor.transform(df2), df2[config['target_column']].values
-    
-#     logging.info("Updating model...")
-#     model.train(X_test, y_test, update=True)
-    
-#     # Оценка после дообучения
-#     updated_metrics = model.evaluate(X_test, y_test)
-#     logging.info("\nMetrics after update:")
-#     logging.info(f"MAE: {updated_metrics['mae']:.2f} months")
-#     logging.info(f"R²: {updated_metrics['r2']:.4f}")
-    
-#     # Сохранение итоговой модели
-#     model.save_model()
-#     logging.info("Final model saved successfully")
-# except Exception as e:
-#     logging.error(f"Pipeline failed: {str(e)}")
-#     sys.exit(1)
-    
     for batch_idx, batch_df in enumerate(fine_tune_batches, 1):
         logging.info(f"\nProcessing fine-tuning batch {batch_idx}/{len(fine_tune_batches)}")
         
@@ -201,10 +181,7 @@ try:
     avg_mae = validator.cross_validate(X_test, y_test)
     print(f"Средний MAE по кросс-валидации: {avg_mae:.2f}")
     print("\n=== Тест сравнения моделей ===")
-    # Создаем тестовые метрики новой модели
-    new_metrics = {'mae': avg_mae * 0.9}  # Имитируем улучшение на 10%
-    
-    if validator.validate_new_model(new_metrics):
+    if validator.validate_new_model(avg_mae):
         print("Новая модель лучше! Произошло обновление.")
     else:
         print("Новая модель не лучше текущей.")
