@@ -55,7 +55,7 @@ preprocessor = CreditDataPreprocessor(config)
 
 try:
     # Загрузка и обработка данных
-    # raw_df = pd.read_csv('./kal.csv')
+    # raw_df = pd.read_csv('./.csv')
     raw_df = initial_train_df.copy()
     logging.info(f"Raw data shape: {raw_df.shape}")
     mid_index = len(raw_df) // 2
@@ -191,7 +191,7 @@ config = {
 Path(config['model_storage']).mkdir(parents=True, exist_ok=True)
 Path(config['reports_dir']).mkdir(parents=True, exist_ok=True)
 # Генерируем тестовые данные
-raw_df = pd.read_csv('./kal.csv')
+raw_df = initial_train_df.copy()
 preprocessor = CreditDataPreprocessor(config)
 X_test, y_test = preprocessor.fit_transform(raw_df)
 # Инициализируем валидатор
