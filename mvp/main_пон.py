@@ -54,15 +54,9 @@ config = {
 preprocessor = CreditDataPreprocessor(config)
 
 try:
-    # Загрузка и обработка данных
-    # raw_df = pd.read_csv('./.csv')
     raw_df = initial_train_df.copy()
     logging.info(f"Raw data shape: {raw_df.shape}")
     mid_index = len(raw_df) // 2
-    # Разделяем DataFrame на две части
-    # df1 = df.iloc[:mid_index].reset_index(drop=True)
-    # df2 = df.iloc[mid_index:].reset_index(drop=True)
-    # raw_df = df1
     # Препроцессинг данных
     X_processed, y = preprocessor.fit_transform(raw_df)
     config['n_features'] = X_processed.shape[1]  # Обновляем количество признаков
@@ -195,7 +189,6 @@ except Exception as e:
     print(f"Ошибка при выполнении тестов: {str(e)}")
     raise
 
-import mlflow
 import xgboost as xgb
 from sklearn.metrics import mean_absolute_error
 
