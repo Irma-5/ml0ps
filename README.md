@@ -49,7 +49,11 @@ python3 pipeline_manager.py summary
 Path указывает на папку в котором лежит config.py. В нем реализован словарь DATA_LOADER_PARAMS с парами path->str,year_to_split->int, num_batch->int. year_to_split>= 2000 и на момент реализации <=2023.
 ```bash
 python3 pipeline_manager.py setconfig --param path --value "cofig_folder"
+```
+```bash
 python3 pipeline_manager.py setconfig --param year_to_split --value 2010
+```
+```bash
 python3 pipeline_manager.py setconfig --param num_batch --value 10
 ```
 ## Структура артефактов
