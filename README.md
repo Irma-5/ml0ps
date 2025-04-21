@@ -32,18 +32,18 @@ pip install -r requirements.txt
 
 ### Предсказания
 ```bash
-python pipeline_manager.py inference --data path/to/data.csv
+python3 pipeline_manager.py inference --data path/to/data.csv
 ```
 Результат сохраняется в predictions_<timestamp>.csv
 
 ### Обновление модели
 ```bash
-python pipeline_manager.py update --data path/to/new_data.csv
+python3 pipeline_manager.py update --data path/to/new_data.csv
 ```
 
 ### Получение статистики
 ```bash
-python pipeline_manager.py summary
+python3 pipeline_manager.py summary
 ```
 ### Изменение конфигурации данных напрямую
 Path указывает на папку в котором лежит config.py. В нем реализован словарь DATA_LOADER_PARAMS с парами path->str,year_to_split->int, num_batch->int. year_to_split>= 2000 и на момент реализации <=2023.
