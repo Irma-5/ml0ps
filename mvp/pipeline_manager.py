@@ -67,35 +67,46 @@ class PipelineManager:
             "config": self.config
         }
     
+    @staticmethod
     def update_config(param: str, value: str):
-        """Обновление параметров в DataLoader/config.py"""
+        """Обновление параметров в DataLoader/config.py с полной заменой значения"""
         config_path = Path("DataLoader/config.py")
         try:
             with open(config_path, 'r') as f:
-                lines = f.readlines()
+                content = f.read()
 
-            pattern = re.compile(rf"^{param}\s*=\s*.*")
-            found = False
-            for i, line in enumerate(lines):
-                if pattern.match(line.strip()):
-                    if param in ['year_to_split', 'num_batch']:
-                        try:
-                            value_converted = int(value)
-                        except ValueError:
-                            raise ValueError(f"Значение {value} для параметра {param} должно быть целым числом")
-                        new_line = f"{param} = {value_converted}\n"
-                    else:
-                        new_line = f'{param} = "{value}"\n'
-                    lines[i] = new_line
-                    found = True
-                    break
-                
-            if not found:
+            # Шаблон для поиска параметра в формате "param": value
+            pattern = re.compile(
+                rf'("{param}"\s*:\s*)([^,\n]+)(,?\s*#.*?)?',
+                re.DOTALL
+            )
+
+            match = pattern.search(content)
+            if not match:
                 raise ValueError(f"Параметр {param} не найден в config.py")
 
+            # Обработка значений по типам
+            if param in ['year_to_split', 'num_batch']:
+                try:
+                    new_value = int(value)
+                except ValueError:
+                    raise ValueError(f"{param} должен быть целым числом")
+                replacement = f'{new_value}'
+            else:
+                # Сохраняем raw string для path
+                if '\\' in value and not value.startswith('r"'):
+                    replacement = f'r"{value}"'
+                else:
+                    replacement = f'"{value}"'
+
+            # Замена только значения параметра
+            updated_content = content[:match.start(2)] + replacement + content[match.end(2):]
+
             with open(config_path, 'w') as f:
-                f.writelines(lines)
-            logger.info(f"Параметр {param} успешно обновлен на {value}")
+                f.write(updated_content)
+
+            logger.info(f"Параметр {param} обновлен: {match.group(2)} → {replacement}")
+
         except Exception as e:
             logger.error(f"Ошибка обновления конфига: {e}")
             raise
@@ -103,13 +114,14 @@ def main():
     parser = argparse.ArgumentParser(description="Credit Model Pipeline Manager")
     subparsers = parser.add_subparsers(dest='command')
 
+
     # Inference command
     infer_parser = subparsers.add_parser('inference', help='Make predictions')
-    infer_parser.add_argument('--data', type=str, required=True, help='Path to input data')
+    infer_parser.add_argument('--data', type=str, required=False, help='Path to input data')
 
     # Update command
     update_parser = subparsers.add_parser('update', help='Update model with new data')
-    update_parser.add_argument('--data', type=str, required=True, help='Path to new training data')
+    update_parser.add_argument('--data', type=str, required=False, help='Path to new training data')
 
     # Summary command
     subparsers.add_parser('summary', help='Get model summary')
