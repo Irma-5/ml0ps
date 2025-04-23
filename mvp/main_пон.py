@@ -125,13 +125,20 @@ try:
         # Preprocess batch
         batch_df = batch_df[batch_df['zero_balance_code'] == 1.0]
         X_update, y_update = preprocessor.transform(batch_df), batch_df[config['target_column']].values
+
+        X_update, X_tst, y_update, y_tst = train_test_split(
+        X_update, y_update,
+        test_size=config['test_size'],
+        random_state=config['random_state'], 
+        shuffle=False
+        )
         
         # Update model
         logging.info("Updating model with new batch...")
         model.train(X_update, y_update, update=True)
         
         # Evaluate after update
-        updated_metrics = model.evaluate(X_test, y_test)
+        updated_metrics = model.evaluate(X_tst, y_tst)
         logging.info(f"Metrics after batch {batch_idx} update:")
         logging.info(f"MAE: {updated_metrics['mae']:.2f} months")
         logging.info(f"R²: {updated_metrics['r2']:.4f}")
