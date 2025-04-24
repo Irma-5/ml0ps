@@ -31,20 +31,20 @@ class CreditModel:
         else:
             self.model = xgb.XGBRegressor(
                 objective='reg:squarederror',
-                learning_rate = 0.1,
+                learning_rate = 0.01,
                 max_depth = 8,
                 n_estimators=200,
                 subsample=0.8,
                 colsample_bytree=0.9,
-                reg_alpha=0.1,
-                reg_lambda=1,
+                reg_alpha=0.3,
+                reg_lambda=0.9,
                 random_state=42
             )
 
     def train(self, X, y, update=False):
         """Обучение/дообучение модели"""
         if update and self.model is not None:
-            self.model = xgb.XGBRegressor()
+            self.model = xgb.XGBRegressor(learning_rate = 0.05)
             self.model.load_model(self.model_path)
             print(self.model_path)
             self.model.fit(X, y, 

@@ -128,9 +128,9 @@ try:
 
         X_update, X_tst, y_update, y_tst = train_test_split(
         X_update, y_update,
-        test_size=config['test_size'],
+        test_size=0.15,
         random_state=config['random_state'], 
-        shuffle=False
+        shuffle=True
         )
         
         # Update model

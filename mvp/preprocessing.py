@@ -19,7 +19,6 @@ class CreditDataPreprocessor:
 
         self.target_column = config['target_column']
     def _build_pipeline(self):
-        """Упрощенный пайплайн с гарантированной обработкой NaN"""
         numeric_features = [
             'DTI_ratio', 'CLTV', 'LTV', 'orig_UPB',
             'orig_interest_rate', 'orig_loan_term', 'MI_%', 'units_numb'
@@ -49,7 +48,7 @@ class CreditDataPreprocessor:
 
         categorical_transformer = Pipeline(steps=[
             ('imputer', SimpleImputer(strategy='constant', fill_value='UNKNOWN')),
-            ('onehot', OneHotEncoder(handle_unknown='ignore', sparse_output=False))
+            ('onehot', OneHotEncoder(handle_unknown='error', sparse_output=False))
         ])
 
         date_transformer = Pipeline(steps=[
@@ -85,16 +84,12 @@ class CreditDataPreprocessor:
         self._build_pipeline()
 
 
-        df = df.drop(columns=[
-            'Unnamed: 0', 'id_loan', 'postal_code', 
-            'id_loan_preharp'
-        ], errors='ignore')
         df = df[df['zero_balance_code'] == 1.0]
-    
-
         y = df[self.target_column].values
-        X = df.drop(columns=[self.target_column])
-        
+        X = df.drop(columns=[
+            'Unnamed: 0', 'id_loan', 'postal_code', 
+            'id_loan_preharp', self.target_column
+        ], errors='ignore')
 
         X_processed = self.preprocessor.fit_transform(X)
         
