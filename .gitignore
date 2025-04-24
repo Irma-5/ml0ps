@@ -12,3 +12,4 @@ mvp/preprocessors/preprocessor.pkl
 /mvp/model_artifacts
 /mvp/preprocessors
 /mvp/model_artifacts
+*.joblib

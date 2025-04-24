@@ -1,5 +1,5 @@
 {
-    "saved_at": "2025-04-23T23:20:40.325352",
+    "saved_at": "2025-04-24T14:11:32.232133",
     "input_shape": 100,
     "model_type": "<class 'xgboost.sklearn.XGBRegressor'>",
     "config": {
