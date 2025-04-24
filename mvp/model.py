@@ -32,7 +32,7 @@ class CreditModel:
             self.model = xgb.XGBRegressor(
                 objective='reg:squarederror',
                 learning_rate = 0.01,
-                max_depth = 8,
+                max_depth = 7,
                 n_estimators=200,
                 subsample=0.8,
                 colsample_bytree=0.9,

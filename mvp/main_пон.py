@@ -20,7 +20,7 @@ print(f"Initial training data shape: {initial_train_df.shape}")
 # Collect subsequent batches for fine-tuning
 fine_tune_batches = []
 for _ in range(DATA_LOADER_PARAMS['num_batch']):  
-    batch = data_loader.get_data(verbose=2)
+    batch = data_loader.get_data(verbose=0)
     fine_tune_batches.append(batch)
     print(f"Loaded fine-tuning batch {len(fine_tune_batches)} with shape: {batch.shape}")
 
@@ -119,6 +119,7 @@ try:
     logging.info(f"R²: {metrics['r2']:.4f}")
     model.save_model()
     
+    
     for batch_idx, batch_df in enumerate(fine_tune_batches, 1):
         logging.info(f"\nProcessing fine-tuning batch {batch_idx}/{len(fine_tune_batches)}")
         
@@ -168,14 +169,12 @@ config = {
         'n_iter': 20  # Количество итераций для RandomizedSearch
     }
 
-    # Создаем необходимые директории
 Path(config['model_storage']).mkdir(parents=True, exist_ok=True)
 Path(config['reports_dir']).mkdir(parents=True, exist_ok=True)
-# Генерируем тестовые данные
 raw_df = initial_train_df.copy()
 preprocessor = CreditDataPreprocessor(config)
 X_test, y_test = preprocessor.fit_transform(raw_df)
-# Инициализируем валидатор
+
 validator = ModelValidator(config)
 try:
     print("=== Тест кросс-валидации ===")

@@ -7,7 +7,6 @@ from model import CreditModel
 import pickle
 import pandas as pd
 
-from preprocessing import CreditDataPreprocessor
 
 class ModelValidator:
     def __init__(self, config):
