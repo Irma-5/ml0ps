@@ -1,71 +1,91 @@
 import json
-from datetime import datetime
+import logging
 from pathlib import Path
-import numpy as np
-from sklearn.model_selection import TimeSeriesSplit
-from model import CreditModel
-import pickle
-import pandas as pd
+from datetime import datetime
 
+import pandas as pd
+from sklearn.model_selection import train_test_split, cross_val_score, TimeSeriesSplit
+from preprocessing import CreditDataPreprocessor
+from model import CreditModel
+
+logger = logging.getLogger(__name__)
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 class ModelValidator:
     def __init__(self, config):
         self.config = config
-        self.storage_path = Path(config['model_storage'])
-        self.reports_path = Path(config['reports_dir'])
-    
-    def cross_validate(self, X, y):
-        """Кросс-валидация с временным разделением"""
-        tscv = TimeSeriesSplit(n_splits=self.config['n_splits'])
-        metrics = []
-        
-        for train_idx, test_idx in tscv.split(X):
-            X_train, X_test = X[train_idx], X[test_idx]
-            y_train, y_test = y[train_idx], y[test_idx]
-            
-            model = CreditModel(self.config)
-            model.train(X_train, y_train)
-            metrics.append(model.evaluate(X_test, y_test))
-        
-        self._save_validation_report(metrics)
-        return np.mean([m['mae'] for m in metrics])
+        self.preprocessor = CreditDataPreprocessor(config)
+        self.model = CreditModel(config)
+        self.metrics = {}
 
-    def validate_new_model(self, new_model_metrics):
-        """Сравнение новой модели с текущей лучшей"""
-        best_model_path = self.storage_path / 'best_model.pkl'
-        
-        if not best_model_path.exists():
-            return True
-            
-        with open(best_model_path, 'rb') as f:
-            best_model = pickle.load(f)
-        
-        improvement = (best_model['metadata']['mae'] - new_model_metrics['mae']) / best_model['metadata']['mae']
-        
-        if improvement > self.config['improvement_threshold']:
-            self._update_best_model(new_model_metrics)
-            return True
-        return False
+    def load_data(self, data_path):
+        """Загрузка данных из CSV-файла"""
+        df = pd.read_csv(data_path)
+        return df
 
-    def _save_validation_report(self, metrics):
-        """Сохранение отчета о валидации"""
-        report = {
-            'created_at': datetime.now().isoformat(),
-            'avg_mae': np.mean([m['mae'] for m in metrics]),
-            'avg_r2': np.mean([m['r2'] for m in metrics]),
-            'n_folds': len(metrics)
-        }
-        
-        filename = self.reports_path / f"validation_{datetime.now().strftime('%Y%m%d%H%M')}.json"
-        with open(filename, 'w') as f:
-            json.dump(report, f)
+    def validate(self, df, method='holdout'):
+        """
+        Проверка модели.
+        method: 'holdout', 'cv' или 'timeseries'
+        """
+        X, y = self.preprocessor.fit_transform(df)
 
-    def _update_best_model(self, metrics):
-        """Обновление лучшей модели"""
-        current_model_path = self.storage_path / 'current_model.pkl'
-        best_model_path = self.storage_path / 'best_model.pkl'
-        
-        with open(current_model_path, 'rb') as src, open(best_model_path, 'wb') as dst:
-            model_data = pickle.load(src)
-            model_data['metadata'].update(metrics)
-            pickle.dump(model_data, dst)
+        if method == 'holdout':
+            test_size = self.config.get('test_size', 0.2)
+            random_state = self.config.get('random_state', 42)
+            X_train, X_test, y_train, y_test = train_test_split(
+                X, y, test_size=test_size, random_state=random_state
+            )
+            self.model.train(X_train, y_train)
+            self.metrics = self.model.evaluate(X_test, y_test)
+
+        elif method == 'cv':
+            cv = self.config.get('cv_folds', 5)
+            scoring = self.config.get('scoring', 'neg_mean_absolute_error')
+            scores = cross_val_score(self.model.model, X, y, cv=cv, scoring=scoring)
+            self.metrics = {
+                'cv_scores': scores.tolist(),
+                'cv_mean_score': float(scores.mean())
+            }
+
+        elif method == 'timeseries':
+            n_splits = self.config.get('n_splits', 5)
+            tscv = TimeSeriesSplit(n_splits=n_splits)
+            scoring = self.config.get('scoring', 'neg_mean_absolute_error')
+            scores = cross_val_score(self.model.model, X, y, cv=tscv, scoring=scoring)
+            self.metrics = {
+                'tscv_scores': scores.tolist(),
+                'tscv_mean_score': float(scores.mean())
+            }
+
+        else:
+            raise ValueError(f"Unknown validation method: {method}")
+
+        logger.info(f"Validation metrics: {self.metrics}")
+        return self.metrics
+
+    def save_metrics(self):
+        """Сохранение метрик в JSON с временной меткой"""
+        metrics_dir = Path(self.config['model_storage']) / 'metrics'
+        metrics_dir.mkdir(parents=True, exist_ok=True)
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        metrics_path = metrics_dir / f"metrics_{timestamp}.json"
+        with open(metrics_path, 'w') as f:
+            json.dump(self.metrics, f, indent=4)
+        logger.info(f"Metrics saved to {metrics_path}")
+        return metrics_path
+
+if __name__ == "__main__":
+    import json
+    # Пример запуска из консоли:
+    config_path = "config.json"
+    with open(config_path, 'r') as f:
+        config = json.load(f)
+    data_path = config['data_path']
+
+    validator = ModelValidator(config)
+    df = validator.load_data(data_path)
+    metrics = validator.validate(df, method=config.get('validation_method', 'holdout'))
+    metrics_path = validator.save_metrics()
+    print(f"Validation complete. Metrics: {metrics}")
+    print(f"Metrics saved at: {metrics_path}")

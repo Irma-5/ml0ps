@@ -154,46 +154,38 @@ except Exception as e:
     
 ###Validation
 from validation import ModelValidator
-config = {
-        'model_storage': './test_models',
-        'reports_dir': './test_reports',
-        'n_splits': 3,
-        'improvement_threshold': 0.05,  # 5% улучшение для обновления модели
-        'model_storage': './models',
-        'preprocessor_path': './preprocessors',
-        'random_state': 42,
-        'test_size': 0.2,
-        'target_column': 'time',
-        'hyperparam_tuning': False,  # Флаг для включения/выключения подбора параметров
-        'cv_folds': 3,  # Количество фолдов для кросс-валидации
-        'n_iter': 20  # Количество итераций для RandomizedSearch
-    }
 
-Path(config['model_storage']).mkdir(parents=True, exist_ok=True)
-Path(config['reports_dir']).mkdir(parents=True, exist_ok=True)
-raw_df = initial_train_df.copy()
-preprocessor = CreditDataPreprocessor(config)
-X_test, y_test = preprocessor.fit_transform(raw_df)
+# Конфигурация для валидации
+val_config = {
+    'model_storage':   config['model_storage'],       # папка с моделями
+    'random_state':    config['random_state'],        # для reproducibility
+    'test_size':       config['test_size'],           # hold-out
+    'cv_folds':        config['cv_folds'],            # k-fold CV
+    'n_splits':        config.get('n_splits', 5),     # TimeSeriesCV
+    'scoring':         'neg_mean_absolute_error',
+    'target_column':   config['target_column']
+}
 
-validator = ModelValidator(config)
-try:
-    print("=== Тест кросс-валидации ===")
-    avg_mae = validator.cross_validate(X_test, y_test)
-    print(f"Средний MAE по кросс-валидации: {avg_mae:.2f}")
-    print("\n=== Тест сравнения моделей ===")
-    if validator.validate_new_model(avg_mae):
-        print("Новая модель лучше! Произошло обновление.")
-    else:
-        print("Новая модель не лучше текущей.")
-    print("\n=== Проверка генерации отчетов ===")
-    report_files = list(Path(config['reports_dir']).glob('*.json'))
-    print(f"Найдено отчетов: {len(report_files)}")
-    if report_files:
-        with open(report_files[0], 'r') as f:
-            print("Пример отчета:", json.load(f))
-except Exception as e:
-    print(f"Ошибка при выполнении тестов: {str(e)}")
-    raise
+# Создаём валидатор
+validator = ModelValidator(val_config)
+
+# Hold-out валидация
+print("=== Hold-out validation ===")
+metrics_holdout = validator.validate(initial_train_df, method='holdout')
+print("Hold-out metrics:", metrics_holdout)
+validator.save_metrics()
+
+# K-Fold Cross-Validation
+print("\n=== K-Fold Cross-Validation ===")
+metrics_cv = validator.validate(initial_train_df, method='cv')
+print("CV metrics:", metrics_cv)
+validator.save_metrics()
+
+# Time Series Cross-Validation
+print("\n=== Time Series Cross-Validation ===")
+metrics_ts = validator.validate(initial_train_df, method='timeseries')
+print("TimeSeriesCV metrics:", metrics_ts)
+validator.save_metrics()
 
 import xgboost as xgb
 from sklearn.metrics import mean_absolute_error
