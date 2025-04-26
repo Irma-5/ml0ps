@@ -2,11 +2,15 @@ import json
 import logging
 from pathlib import Path
 from datetime import datetime
-
 import pandas as pd
 from sklearn.model_selection import train_test_split, cross_val_score, TimeSeriesSplit
 from preprocessing import CreditDataPreprocessor
 from model import CreditModel
+from lime.lime_tabular import LimeTabularExplainer
+import shap
+import matplotlib.pyplot as plt
+import os
+from scipy.stats import ks_2samp
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -19,15 +23,10 @@ class ModelValidator:
         self.metrics = {}
 
     def load_data(self, data_path):
-        """Загрузка данных из CSV-файла"""
         df = pd.read_csv(data_path)
         return df
 
     def validate(self, df, method='holdout'):
-        """
-        Проверка модели.
-        method: 'holdout', 'cv' или 'timeseries'
-        """
         X, y = self.preprocessor.fit_transform(df)
 
         if method == 'holdout':
@@ -65,7 +64,6 @@ class ModelValidator:
         return self.metrics
 
     def save_metrics(self):
-        """Сохранение метрик в JSON с временной меткой"""
         metrics_dir = Path(self.config['model_storage']) / 'metrics'
         metrics_dir.mkdir(parents=True, exist_ok=True)
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -75,17 +73,37 @@ class ModelValidator:
         logger.info(f"Metrics saved to {metrics_path}")
         return metrics_path
 
-if __name__ == "__main__":
-    import json
-    # Пример запуска из консоли:
-    config_path = "config.json"
-    with open(config_path, 'r') as f:
-        config = json.load(f)
-    data_path = config['data_path']
 
-    validator = ModelValidator(config)
-    df = validator.load_data(data_path)
-    metrics = validator.validate(df, method=config.get('validation_method', 'holdout'))
-    metrics_path = validator.save_metrics()
-    print(f"Validation complete. Metrics: {metrics}")
-    print(f"Metrics saved at: {metrics_path}")
+def explain_with_shap(model_obj, X, feature_names, save_dir="models/shap"):
+    os.makedirs(save_dir, exist_ok=True)
+    explainer = shap.TreeExplainer(model_obj.model)
+    shap_vals = explainer.shap_values(X)
+    shap.summary_plot(shap_vals, X, feature_names=feature_names, show=False)
+    plt.savefig(f"{save_dir}/summary.png", dpi=200)
+    plt.close()
+    shap.plots.waterfall(shap.Explanation(values=shap_vals[0],
+                                            base_values=explainer.expected_value,
+                                            data=X[0],
+                                            feature_names=feature_names), show=False)
+    plt.savefig(f"{save_dir}/waterfall_0.png", dpi=200)
+    plt.close()
+
+def explain_with_lime(X_train, X_test, predict_fn, feature_names, save_file="models/lime.html"):
+    explainer = LimeTabularExplainer(training_data=X_train,
+                                        feature_names=feature_names,
+                                        mode='regression')
+    exp = explainer.explain_instance(data_row=X_test[0],
+                                        predict_fn=predict_fn,
+                                        num_features=10)
+    exp.save_to_file(save_file)
+
+def detect_drift(baseline, new_X, feature_names, alpha=0.05):
+        drifted = []
+        for i, name in enumerate(feature_names):
+            _, p = ks_2samp(baseline[:, i], new_X[:, i])
+            if p < alpha:
+                drifted.append(name)
+        if drifted:
+            logger.warning(f"Drift detected in features: {drifted}")
+        else:
+            logger.info("No drift detected")
