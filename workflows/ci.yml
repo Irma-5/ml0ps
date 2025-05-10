@@ -1,0 +1,49 @@
+name: CRON Background Training
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  schedule:
+    - cron: '*/5 * * * *'     # каждые 5 мин
+
+jobs:
+  background-training:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+
+    - name: Attempt to download previous artifacts
+      uses: dawidd6/action-download-artifact@v6
+      with:
+        workflow: cron_training.yml
+        name: training-artifacts
+        path: loc
+        workflow_conclusion: success
+        branch: main
+      continue-on-error: true
+
+    - name: Run training script with periodic artifact generation
+      run: python pipeline_manager.py update
+
+    - name: Upload new artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: training-artifacts
+        path: loc/
+
+    - name: Upload logs
+      uses: actions/upload-artifact@v4
+      with:
+        name: training-logs
+        path: training.log
