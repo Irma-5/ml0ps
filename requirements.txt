@@ -1,6 +1,4 @@
-xgboost
-scikit-learn
-pandas
-python
-tqdm
-joblib
+xgboost==2.0.3
+scikit-learn==1.4.0
+pandas==2.2.3
+tqdm==4.66.2
