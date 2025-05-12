@@ -1,5 +1,7 @@
 numpy
 pandas
+matplotlib
+seaborn
 xgboost
 scikit-learn
 tqdm
