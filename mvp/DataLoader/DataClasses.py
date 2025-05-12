@@ -141,7 +141,7 @@ class DataLoader:
         df = self._add_batch()
         dq = DataQualityEvaluator()
         if verbose == 2: print('evaluating data quality...')
-        self.stats = dq.make_stats(df, verbose=(verbose >= 1))
+        self.stats = dq.make_stats(df, self.step, verbose=(verbose >= 1))
         if verbose == 2: print('cleaning data...')
         df, counts = dq.fix_data(df, first_call=True)
         if verbose == 2:
@@ -235,7 +235,7 @@ class DataQualityEvaluator:
             ['Y', 'N', 7, 9, '7', '9'])].sum() if 'MI_cancel_flag' in a.columns else None)
         return lst
 
-    def make_stats(self, df, verbose=False):
+    def make_stats(self, df, i, verbose=False):
         dct = [df.isna().sum(), df.shape[0]]
         f = open('stats.txt', 'w')
         c = self.completeness(df)
@@ -259,16 +259,16 @@ class DataQualityEvaluator:
 
         corr = df.corr()
         sns.heatmap(corr, annot=False, cmap='coolwarm', ax=ax, cbar=False)
-        ax.set_title('Корреляционная матрица', fontsize=14)
-        plt.savefig('correlation.png', dpi=150, bbox_inches='tight')
+        ax.set_title(f'Корреляционная матрица для батча {i}', fontsize=14)
+        plt.savefig(f'correlation_batch_{i}.png', dpi=150, bbox_inches='tight')
         cols = [['units_numb', 'occupancy_status'], ['loan_purpose', 'borrowers_num']]
         fig, ax = plt.subplots(2, 2, figsize=(10, 10))
         for i in [0, 1]:
             for j in [0, 1]:
                 sns.histplot(df['b'], ax=ax[i][j], kde=True, color='skyblue', edgecolor='black')
-                ax[i][j].set_title(f'Распределение {cols[i][j]}', fontsize=14)
+                ax[i][j].set_title(f'Распределение {cols[i][j]} для батча {i}', fontsize=14)
 
-        plt.savefig('hists.png', dpi=150, bbox_inches='tight')
+        plt.savefig(f'hists_batch_{i}.png', dpi=150, bbox_inches='tight')
 
         plt.savefig('stats.png', dpi=150, bbox_inches='tight')
         with open('stats.pickle', 'wb') as f:
