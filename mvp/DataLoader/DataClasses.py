@@ -5,7 +5,8 @@ import pickle
 import pandas as pd
 import numpy as np
 import os
-
+import matplotlib.pyplot as plt
+import seaborn as sns
 from typing import List
 from typing import Dict
 import warnings
@@ -245,17 +246,31 @@ class DataQualityEvaluator:
             f.write(f'    {k}: {v}\n')
             if verbose: print(f'    {k}: {v}')
         c = self.validity(df)
-        # dct['validity'] = c
         f.write('\nvalidity:\n')
         if verbose: print('\nvalidity:')
         c = self.validity(df)
         for k, v in c.items():
             f.write(f'    {k:<25} - {v}\n')
             if verbose: print(f'    {k:<25} - {v}')
-        # dct['timeliness'] = {'timeliness': True}
         f.write('\ntimeliness: True')
         if verbose: print('\ntimeliness: True')
         f.close()
+        fig, ax = plt.subplots(1, figsize=(5, 5))
+
+        corr = df.corr()
+        sns.heatmap(corr, annot=False, cmap='coolwarm', ax=ax, cbar=False)
+        ax.set_title('Корреляционная матрица', fontsize=14)
+        plt.savefig('correlation.png', dpi=150, bbox_inches='tight')
+        cols = [['units_numb', 'occupancy_status'], ['loan_purpose', 'borrowers_num']]
+        fig, ax = plt.subplots(2, 2, figsize=(10, 10))
+        for i in [0, 1]:
+            for j in [0, 1]:
+                sns.histplot(df['b'], ax=ax[i][j], kde=True, color='skyblue', edgecolor='black')
+                ax[i][j].set_title(f'Распределение {cols[i][j]}', fontsize=14)
+
+        plt.savefig('hists.png', dpi=150, bbox_inches='tight')
+
+        plt.savefig('stats.png', dpi=150, bbox_inches='tight')
         with open('stats.pickle', 'wb') as f:
             pickle.dump(dct, f)
         return dct
@@ -279,5 +294,9 @@ class DataQualityEvaluator:
 # data_loader = DataLoader(DATA_LOADER_PARAMS)
 # #data_loader.create_datasets(1)
 # for _ in range(2):
+#       df = data_loader.get_data(verbose=2)
+# data_loader = DataLoader(DATA_LOADER_PARAMS)
+# #data_loader.create_datasets(1)
+# for _ in range(DATA_LOADER_PARAMS['num_batch']):
 #       df = data_loader.get_data(verbose=2)
 
