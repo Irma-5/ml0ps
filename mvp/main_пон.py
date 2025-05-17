@@ -12,7 +12,9 @@ from preprocessing import CreditDataPreprocessor
 from model import CreditModel
 from validation import ModelValidator, detect_drift, explain_with_lime, explain_with_shap
 import pickle
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(message)s",
+handlers=[logging.FileHandler('logfile.log', encoding='utf-8'),
+          logging.StreamHandler()])
 logger = logging.getLogger(__name__)
 
 # Global config (could also be loaded/saved)
