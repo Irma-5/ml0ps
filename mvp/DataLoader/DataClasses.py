@@ -1,3 +1,4 @@
+import logging
 import sys
 
 from tqdm import tqdm
@@ -11,9 +12,10 @@ from typing import List
 from typing import Dict
 import warnings
 
-
-# logging.basicConfig(filename="training.log", level=logging.INFO, format="%(asctime)s - %(message)s")
 from DataLoader.config import DATA_LOADER_PARAMS
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(message)s",
+handlers=[logging.FileHandler('logfile.log', encoding='utf-8'),
+          logging.StreamHandler()])
 
 
 class DataLoader:
@@ -35,17 +37,17 @@ class DataLoader:
         threshold = int((pd.to_datetime('2024-01-01') - pd.to_datetime(f'{self.year}-01-01')).days / 30)
         if self.num_batches > threshold:
             if verbose:
-                print("Process failed: batch_num is too large for this year_to_split")
+                logging.error("Process failed: batch_num is too large for this year_to_split")
             return None
         if verbose:
-            print('Reading static data...')
-            print('Note: it may take several time')
+            logging.info('Reading static data...')
+            logging.info('Note: it may take several time')
         orig_ = pd.read_csv(os.path.join(self.raw_path, 'historical_data_1999Q1.txt'), sep='|', names=orig_cols, dtype=orig_dtypes)
         orig_ = orig_.apply(lambda x: x.astype('category') if x.name in categ else x, axis=0)
         orig_ = orig_.reset_index(drop=True)
         if verbose:
-            print('Reading dynamic data...')
-            print('Note: it may take several time')
+            logging.info('Reading dynamic data...')
+            logging.info('Note: it may take several time')
         svc_ = pd.read_csv(os.path.join(self.raw_path, 'historical_data_time1999Q1.csv'))
         svc_.period = pd.to_datetime(svc_.period.astype(str), format='%Y%m')
 
@@ -54,7 +56,7 @@ class DataLoader:
 
         delta = (max_date - min_date) // self.num_batches
         if verbose:
-            print('Creating train dataset...')
+            logging.info('Creating train dataset...')
         tmp = svc_[(svc_.period < min_date)]
         tmp = tmp.sort_values(by=['id_loan', 'period'])
         tmp = tmp.reset_index(drop=True)
@@ -65,7 +67,7 @@ class DataLoader:
         tmp = tmp.dropna(subset=['period'])
         tmp.to_csv(os.path.join(self.datapath, f"train_dataset.csv"))
         if verbose:
-            print('Creating batches...')
+            logging.info('Creating batches...')
             p = tqdm(total=self.num_batches, file=sys.stdout, colour='WHITE')
         for i in range(self.num_batches):
             tmp = svc_[(svc_.period < min_date + (i+1) * delta) & (svc_.period >= min_date + (i) * delta)]
@@ -92,27 +94,29 @@ class DataLoader:
 
         The function creates files in the `datasets` folder:
             - `train_dataset.csv` — training dataset (all data before split_year).
-            - `batch_i.csv` —  finetuning datasets.
+            - `batch_i.csv` —  new datasets.
         """
         self.n = 0
         os.makedirs(self.datapath, exist_ok=True)
         self._extract(verbose=verbose)
 
-    def _add_batch(self):
+    def _add_batch(self, f):
         if self.step < self.num_batches:
+            self.step += 1
             df = pd.read_csv(os.path.join(self.datapath, r"train_dataset.csv"))
-            if self.step > 0:
+            if f:
+                self.step -= 1
+                logging.info('The batch was frozen, restoring previous data...')
+            if self.step > 1:
                 new = pd.read_csv(os.path.join(self.datapath, f"batch_{self.step}.csv"))
                 min_ = new.period.min()
                 new = pd.concat([df, new[df.columns]])
                 new = self._create_time_parameter(new) # объединяли с train чтобы правильно рассчитать time
-                print(f'{self.year + self.step}-01-01')
                 new = new[new.period >= min_] # оставили только сам батч
             else:
                 new = self._create_time_parameter(df)
-            self.step += 1
             return new
-        print('no new batches left')
+        logging.error('No new batches left')
         return None
 
     def _create_time_parameter(self, df):
@@ -136,40 +140,40 @@ class DataLoader:
         df = df[~start]
         return df[df.time >= 0]
 
-    def _first(self, verbose=0):
-        if verbose==2: print('reading train data...')
-        df = self._add_batch()
+    def _first(self, f, verbose=0):
+        if verbose==2: logging.info('Reading train data...')
+        df = self._add_batch(f)
         dq = DataQualityEvaluator()
-        if verbose == 2: print('evaluating data quality...')
+        if verbose == 2: logging.info('Evaluating data quality...')
         self.stats = dq.make_stats(df, self.step, verbose=(verbose >= 1))
-        if verbose == 2: print('cleaning data...')
+        if verbose == 2: logging.info('Cleaning data...')
         df, counts = dq.fix_data(df, first_call=True)
         if verbose == 2:
-            print(f'{counts} bad column(s) was removed')
-            print(f'\n done')
+            logging.info(f'{counts} bad column(s) was removed')
+            logging.info(f'Done')
         return df
 
-    def _step(self, verbose=0):
-        if verbose == 2: print('reading next batch...')
-        df_ = self._add_batch()
+    def _step(self, f, verbose=0):
+        if verbose == 2: logging.info('Reading next batch...')
+        df_ = self._add_batch(f)
         if df_ is None: return None
-        if verbose == 2: print('evaluating data quality...')
+        if verbose == 2: logging.info('Evaluating data quality...')
         dq = DataQualityEvaluator()
-        result = dq.make_stats(df_, verbose=(verbose >= 1))
-        if verbose == 2: print('cleaning data...')
+        result = dq.make_stats(df_, self.step, verbose=(verbose >= 1))
+        if verbose == 2: logging.info('Cleaning data...')
         df_, counts = dq.fix_data(df_, first_call=False, stats=self.stats)
         # df_ = df_[list(set(df_.columns) & set(cols))]
         if verbose == 2:
-            print(f'{counts} bad column(s) was removed')
-            print(f'\n done')
+            logging.info(f'{counts} bad column(s) was removed')
+            logging.info(f'Done')
         self.stats[0] += result[0]
         self.stats[1] += result[1]
         return df_
 
-    def get_data(self, verbose=0):
+    def get_data(self, verbose=0, freeze=False):
         if self.step == 0:
-            return self._first(verbose=verbose)  # загрузка train датасета
-        return self._step(verbose=verbose)
+            return self._first(f=freeze, verbose=verbose)  # загрузка train датасета
+        return self._step(f=freeze, verbose=verbose)
 
 
 class DataQualityEvaluator:
@@ -235,11 +239,10 @@ class DataQualityEvaluator:
             ['Y', 'N', 7, 9, '7', '9'])].sum() if 'MI_cancel_flag' in a.columns else None)
         return lst
 
-    def make_stats(self, df, i, verbose=False):
+    def make_stats(self, df, numm, verbose=False):
         dct = [df.isna().sum(), df.shape[0]]
         f = open('stats.txt', 'w')
         c = self.completeness(df)
-        # dct['completeness'] = c
         f.write('completeness:\n')
         if verbose: print('completeness:')
         for k, v in c.items():
@@ -255,25 +258,48 @@ class DataQualityEvaluator:
         f.write('\ntimeliness: True')
         if verbose: print('\ntimeliness: True')
         f.close()
-        fig, ax = plt.subplots(1, figsize=(5, 5))
 
-        corr = df.corr()
-        sns.heatmap(corr, annot=False, cmap='coolwarm', ax=ax, cbar=False)
-        ax.set_title(f'Корреляционная матрица для батча {i}', fontsize=14)
-        plt.savefig(f'correlation_batch_{i}.png', dpi=150, bbox_inches='tight')
+        plt.figure(figsize=(20, 10))
+        df.plot.box(vert=True, patch_artist=True, showmeans=True, grid=False)
+        plt.xticks(rotation=45, ha='right',fontsize=8)
+        plt.title(f"boxplot для батча {numm}")
+        plt.tight_layout()
+        plt.savefig(f'boxplot_batch_{numm}.png', dpi=150, bbox_inches='tight')
         cols = [['units_numb', 'occupancy_status'], ['loan_purpose', 'borrowers_num']]
         fig, ax = plt.subplots(2, 2, figsize=(10, 10))
         for i in [0, 1]:
             for j in [0, 1]:
-                sns.histplot(df['b'], ax=ax[i][j], kde=True, color='skyblue', edgecolor='black')
-                ax[i][j].set_title(f'Распределение {cols[i][j]} для батча {i}', fontsize=14)
+                sns.histplot(df[cols[i][j]], ax=ax[i][j], kde=True, color='skyblue', edgecolor='black')
+                ax[i][j].set_title(f'Распределение {cols[i][j]} для батча {numm}', fontsize=8)
 
-        plt.savefig(f'hists_batch_{i}.png', dpi=150, bbox_inches='tight')
+        plt.savefig(f'hists_batch_{numm}.png', dpi=150, bbox_inches='tight')
 
-        plt.savefig('stats.png', dpi=150, bbox_inches='tight')
+        df = self.create_feature(df)
+
         with open('stats.pickle', 'wb') as f:
+            res = {}
+            for col in df.columns[1:]:
+                if df[col].dtype == 'object' and not (col in ['seller_name', 'service_name']):
+                    res[col] = (dict(df['first_time_homebuyer_flag'].value_counts()), 'vc')
+                if df[col].dtype == 'int':
+                    res[col] = ([df[col].quantile(0.25), df[col].quantile(0.75)], 'q')
             pickle.dump(dct, f)
+            pickle.dump(res, f)
         return dct
+
+    def create_feature(self, df):
+        # цена имущества = orig_UPB (кредит) * 100 / LTV
+        # коэффициент долговой нагрузки = кредит / цена * DTI (соотношение долг/доход)
+        df["debt_ratio"] = (df["LTV"]/100) * df["DTI_ratio"]
+        # уровень риска, рассчитывается на основе DTI
+        conditions = [
+            (df["CLTV"] > 80) & (df["DTI_ratio"] > 45),
+            (df["CLTV"] > 60) & (df["DTI_ratio"] > 35),
+            (df["CLTV"] <= 60)
+        ]
+        choices = [1, 2, 3] # 1 - high risk, 2 - medium и 3-low
+        df["risk_ratio"] = np.select(conditions, choices)
+        return df
 
     def fix_data(self, a, first_call=False, stats=None):
         if not first_call:
@@ -292,11 +318,11 @@ class DataQualityEvaluator:
 
 
 # data_loader = DataLoader(DATA_LOADER_PARAMS)
-# #data_loader.create_datasets(1)
-# for _ in range(2):
-#       df = data_loader.get_data(verbose=2)
-# data_loader = DataLoader(DATA_LOADER_PARAMS)
-# #data_loader.create_datasets(1)
-# for _ in range(DATA_LOADER_PARAMS['num_batch']):
+# df = data_loader.get_data(2)
+# df = data_loader.get_data(2)
+# df = data_loader.get_data(2, freeze=True)
+
+# data_loader.create_datasets(1)
+# for _ in range(DATA_LOADER_PARAMS['num_batch']+2):
 #       df = data_loader.get_data(verbose=2)
 
