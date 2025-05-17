@@ -58,8 +58,10 @@ def create_model():
         
         # Save initial artifacts
         save_artifacts(model, preprocessor, CONFIG, validator,val_metrics)
+
         with open('dataloader.pkl', 'wb') as f:
             pickle.dump(data_loader, f)
+
     except Exception as e:
         logger.error(f"Initial pipeline failed: {e}")
         sys.exit(1)
@@ -140,8 +142,9 @@ def update(batch_number=None):
         model = CreditModel(CONFIG)
         model.load_model()
         preprocessor = CreditDataPreprocessor(CONFIG)
-        preprocessor.load("")
-        metrics = update_model(data_loader.get_data(), model, preprocessor)
+        preprocessor.load("preprocessors")
+        temp = data_loader.get_data()
+        metrics = update_model(temp, model, preprocessor)
         print('Reached metrics')
         # Update artifacts
         # logger.info(f"Initial train MAE: {metrics_init['mae']:.2f}, R2: {metrics_init['r2']:.4f}")
@@ -159,6 +162,7 @@ def update(batch_number=None):
         
         # Initial validation
         val_metrics = validate_model(validator, data_loader.get_data())
+        
         save_artifacts(model, preprocessor, CONFIG, validator,val_metrics)
         with open('model.pkl', 'wb') as f:
             pickle.dump(model, f)

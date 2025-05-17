@@ -1,0 +1,309 @@
+2025-05-17 23:49:11,611 - Reading static data...
+2025-05-17 23:49:11,611 - Note: it may take several time
+2025-05-17 23:49:23,045 - Reading dynamic data...
+2025-05-17 23:49:23,046 - Note: it may take several time
+2025-05-17 23:49:27,969 - Creating train dataset...
+2025-05-17 23:49:47,852 - Creating batches...
+2025-05-17 23:50:52,024 - Initial training data shape: (471441, 35)
+2025-05-17 23:50:59,002 - Processed data shape: (436460, 100)
+2025-05-17 23:50:59,240 - Preprocessor saved
+2025-05-17 23:51:27,828 - Model trained successfully
+2025-05-17 23:51:27,983 - Model saved successfully to model_artifacts\current_model.json
+2025-05-17 23:51:27,984 - Initial model trained and saved
+2025-05-17 23:51:29,291 - Model saved successfully to model_artifacts\current_model.json
+2025-05-17 23:51:29,296 - Preprocessor saved to /preprocessor.pkl
+2025-05-17 23:51:29,297 - Initial train MAE: 3.06, R2: 0.9586
+2025-05-17 23:51:54,942 - Processed data shape: (7401, 98)
+2025-05-17 23:51:55,321 - Model trained successfully
+2025-05-17 23:51:55,335 - Validation metrics: {'mae': 1.1468039751052856, 'r2': 0.7291690111160278}
+2025-05-17 23:51:55,341 - Metrics saved to model_artifacts\metrics\metrics_20250517_235155.json
+2025-05-17 23:51:55,526 - Processed data shape: (7401, 98)
+2025-05-17 23:51:56,385 - Validation metrics: {'cv_scores': [-0.8387018442153931, -0.9095361232757568, -2.155762195587158], 'cv_mean_score': -1.3013333876927693}
+2025-05-17 23:51:56,388 - Metrics saved to model_artifacts\metrics\metrics_20250517_235156.json
+2025-05-17 23:51:56,583 - Processed data shape: (7401, 98)
+2025-05-17 23:51:57,896 - Validation metrics: {'tscv_scores': [-0.9182941913604736, -0.8917334079742432, -0.8369046449661255, -0.7302671074867249, -3.591916799545288], 'tscv_mean_score': -1.393823230266571}
+2025-05-17 23:51:57,905 - Metrics saved to model_artifacts\metrics\metrics_20250517_235157.json
+2025-05-17 23:51:57,957 - Artifacts saved to model_artifacts
+2025-05-18 00:00:06,426 - Preprocessor loaded from /preprocessor.pkl
+2025-05-18 00:00:33,034 - Processing batch of shape (10873, 33)
+2025-05-18 00:00:33,311 - Update failed: [00:00:33] C:\actions-runner\_work\xgboost\xgboost\src\learner.cc:1479: Check failed: learner_model_param_.num_feature == p_fmat->Info().num_col_ (98 vs. 100) : Number of columns does not match number of features in booster.
+2025-05-18 00:00:33,311 - Command failed: [00:00:33] C:\actions-runner\_work\xgboost\xgboost\src\learner.cc:1479: Check failed: learner_model_param_.num_feature == p_fmat->Info().num_col_ (98 vs. 100) : Number of columns does not match number of features in booster.
+2025-05-18 00:03:49,274 - Update failed: [Errno 2] No such file or directory: 'preprocessors\\preprocessor.pkl\\preprocessor.pkl'
+2025-05-18 00:03:49,274 - Command failed: [Errno 2] No such file or directory: 'preprocessors\\preprocessor.pkl\\preprocessor.pkl'
+2025-05-18 00:04:13,073 - Update failed: [Errno 2] No such file or directory: 'preprocessor.pkl\\preprocessor.pkl'
+2025-05-18 00:04:13,074 - Command failed: [Errno 2] No such file or directory: 'preprocessor.pkl\\preprocessor.pkl'
+2025-05-18 00:05:55,017 - Reading static data...
+2025-05-18 00:05:55,018 - Note: it may take several time
+2025-05-18 00:06:02,895 - Reading dynamic data...
+2025-05-18 00:06:02,896 - Note: it may take several time
+2025-05-18 00:06:06,286 - Creating train dataset...
+2025-05-18 00:06:24,920 - Creating batches...
+2025-05-18 00:07:28,375 - Initial training data shape: (471441, 35)
+2025-05-18 00:07:35,282 - Processed data shape: (436460, 100)
+2025-05-18 00:07:35,498 - Preprocessor saved
+2025-05-18 00:07:42,253 - Model trained successfully
+2025-05-18 00:07:42,308 - Model saved successfully to model_artifacts\current_model.json
+2025-05-18 00:07:42,309 - Initial model trained and saved
+2025-05-18 00:07:43,029 - Model saved successfully to model_artifacts\current_model.json
+2025-05-18 00:07:43,034 - Preprocessor saved to /preprocessor.pkl
+2025-05-18 00:07:43,034 - Initial train MAE: 1.01, R2: 0.9816
+2025-05-18 00:08:03,186 - Processed data shape: (7401, 98)
+2025-05-18 00:08:03,553 - Model trained successfully
+2025-05-18 00:08:03,566 - Validation metrics: {'mae': 1.1468039751052856, 'r2': 0.7291690111160278}
+2025-05-18 00:08:03,570 - Metrics saved to model_artifacts\metrics\metrics_20250518_000803.json
+2025-05-18 00:08:03,777 - Processed data shape: (7401, 98)
+2025-05-18 00:08:04,677 - Validation metrics: {'cv_scores': [-0.8387018442153931, -0.9095361232757568, -2.155762195587158], 'cv_mean_score': -1.3013333876927693}
+2025-05-18 00:08:04,680 - Metrics saved to model_artifacts\metrics\metrics_20250518_000804.json
+2025-05-18 00:08:04,888 - Processed data shape: (7401, 98)
+2025-05-18 00:08:06,228 - Validation metrics: {'tscv_scores': [-0.9182941913604736, -0.8917334079742432, -0.8369046449661255, -0.7302671074867249, -3.591916799545288], 'tscv_mean_score': -1.393823230266571}
+2025-05-18 00:08:06,232 - Metrics saved to model_artifacts\metrics\metrics_20250518_000806.json
+2025-05-18 00:08:06,270 - Artifacts saved to model_artifacts
+2025-05-18 00:08:33,186 - Preprocessor loaded from preprocessors/preprocessor.pkl
+2025-05-18 00:08:57,081 - Processing batch of shape (10873, 33)
+2025-05-18 00:08:57,386 - Update failed: [00:08:57] C:\actions-runner\_work\xgboost\xgboost\src\learner.cc:1479: Check failed: learner_model_param_.num_feature == p_fmat->Info().num_col_ (98 vs. 100) : Number of columns does not match number of features in booster.
+2025-05-18 00:08:57,386 - Command failed: [00:08:57] C:\actions-runner\_work\xgboost\xgboost\src\learner.cc:1479: Check failed: learner_model_param_.num_feature == p_fmat->Info().num_col_ (98 vs. 100) : Number of columns does not match number of features in booster.
+2025-05-18 00:09:26,883 - Preprocessor loaded from preprocessors/preprocessor.pkl
+2025-05-18 00:09:45,859 - Processing batch of shape (10873, 33)
+2025-05-18 00:09:46,090 - Update failed: [00:09:46] C:\actions-runner\_work\xgboost\xgboost\src\learner.cc:1479: Check failed: learner_model_param_.num_feature == p_fmat->Info().num_col_ (98 vs. 100) : Number of columns does not match number of features in booster.
+2025-05-18 00:09:46,091 - Command failed: [00:09:46] C:\actions-runner\_work\xgboost\xgboost\src\learner.cc:1479: Check failed: learner_model_param_.num_feature == p_fmat->Info().num_col_ (98 vs. 100) : Number of columns does not match number of features in booster.
+2025-05-18 00:10:06,138 - Preprocessor loaded from preprocessors/preprocessor.pkl
+2025-05-18 00:10:30,168 - Processing batch of shape (10873, 33)
+2025-05-18 00:10:30,430 - Update failed: [00:10:30] C:\actions-runner\_work\xgboost\xgboost\src\learner.cc:1479: Check failed: learner_model_param_.num_feature == p_fmat->Info().num_col_ (98 vs. 100) : Number of columns does not match number of features in booster.
+2025-05-18 00:10:30,431 - Command failed: [00:10:30] C:\actions-runner\_work\xgboost\xgboost\src\learner.cc:1479: Check failed: learner_model_param_.num_feature == p_fmat->Info().num_col_ (98 vs. 100) : Number of columns does not match number of features in booster.
+2025-05-18 00:10:57,873 - Preprocessor loaded from preprocessors/preprocessor.pkl
+2025-05-18 00:11:24,639 - Processing batch of shape (10873, 33)
+2025-05-18 00:11:25,177 - Update failed: [00:11:25] C:\actions-runner\_work\xgboost\xgboost\src\learner.cc:1479: Check failed: learner_model_param_.num_feature == p_fmat->Info().num_col_ (98 vs. 100) : Number of columns does not match number of features in booster.
+2025-05-18 00:11:25,178 - Command failed: [00:11:25] C:\actions-runner\_work\xgboost\xgboost\src\learner.cc:1479: Check failed: learner_model_param_.num_feature == p_fmat->Info().num_col_ (98 vs. 100) : Number of columns does not match number of features in booster.
+2025-05-18 00:11:47,054 - Preprocessor loaded from preprocessors/preprocessor.pkl
+2025-05-18 00:12:12,790 - Processing batch of shape (10873, 33)
+2025-05-18 00:12:13,020 - Update failed: [00:12:13] C:\actions-runner\_work\xgboost\xgboost\src\learner.cc:1479: Check failed: learner_model_param_.num_feature == p_fmat->Info().num_col_ (98 vs. 100) : Number of columns does not match number of features in booster.
+2025-05-18 00:12:13,021 - Command failed: [00:12:13] C:\actions-runner\_work\xgboost\xgboost\src\learner.cc:1479: Check failed: learner_model_param_.num_feature == p_fmat->Info().num_col_ (98 vs. 100) : Number of columns does not match number of features in booster.
+2025-05-18 00:14:32,689 - Preprocessor loaded from preprocessors/preprocessor.pkl
+2025-05-18 00:14:55,336 - Processing batch of shape (10873, 33)
+2025-05-18 00:14:55,621 - Update failed: [00:14:55] C:\actions-runner\_work\xgboost\xgboost\src\learner.cc:1479: Check failed: learner_model_param_.num_feature == p_fmat->Info().num_col_ (98 vs. 100) : Number of columns does not match number of features in booster.
+2025-05-18 00:14:55,621 - Command failed: [00:14:55] C:\actions-runner\_work\xgboost\xgboost\src\learner.cc:1479: Check failed: learner_model_param_.num_feature == p_fmat->Info().num_col_ (98 vs. 100) : Number of columns does not match number of features in booster.
+2025-05-18 00:15:53,665 - Preprocessor loaded from preprocessors/preprocessor.pkl
+2025-05-18 00:16:16,325 - Processing batch of shape (10873, 33)
+2025-05-18 00:16:16,584 - Update failed: [00:16:16] C:\actions-runner\_work\xgboost\xgboost\src\learner.cc:1479: Check failed: learner_model_param_.num_feature == p_fmat->Info().num_col_ (98 vs. 100) : Number of columns does not match number of features in booster.
+2025-05-18 00:16:16,584 - Command failed: [00:16:16] C:\actions-runner\_work\xgboost\xgboost\src\learner.cc:1479: Check failed: learner_model_param_.num_feature == p_fmat->Info().num_col_ (98 vs. 100) : Number of columns does not match number of features in booster.
+2025-05-18 00:17:19,730 - Preprocessor loaded from preprocessors/preprocessor.pkl
+2025-05-18 00:17:39,050 - Processing batch of shape (10873, 33)
+2025-05-18 00:17:39,680 - Update failed: [00:17:39] C:\actions-runner\_work\xgboost\xgboost\src\learner.cc:1479: Check failed: learner_model_param_.num_feature == p_fmat->Info().num_col_ (98 vs. 100) : Number of columns does not match number of features in booster.
+2025-05-18 00:17:39,682 - Command failed: [00:17:39] C:\actions-runner\_work\xgboost\xgboost\src\learner.cc:1479: Check failed: learner_model_param_.num_feature == p_fmat->Info().num_col_ (98 vs. 100) : Number of columns does not match number of features in booster.
+2025-05-18 00:32:47,054 - Reading static data...
+2025-05-18 00:32:47,055 - Note: it may take several time
+2025-05-18 00:32:55,875 - Reading dynamic data...
+2025-05-18 00:32:55,876 - Note: it may take several time
+2025-05-18 00:32:59,478 - Creating train dataset...
+2025-05-18 00:33:17,440 - Creating batches...
+2025-05-18 00:34:11,421 - Initial training data shape: (471441, 35)
+2025-05-18 00:34:17,905 - Processed data shape: (436460, 100)
+2025-05-18 00:34:18,165 - Preprocessor saved
+2025-05-18 00:34:26,365 - Model trained successfully
+2025-05-18 00:34:26,432 - Model saved successfully to model_artifacts\current_model.json
+2025-05-18 00:34:26,432 - Initial model trained and saved
+2025-05-18 00:34:27,235 - Model saved successfully to model_artifacts\current_model.json
+2025-05-18 00:34:27,239 - Preprocessor saved to /preprocessor.pkl
+2025-05-18 00:34:45,393 - Preprocessor loaded from preprocessors/preprocessor.pkl
+2025-05-18 00:35:09,162 - Processing batch of shape (10873, 33)
+2025-05-18 00:35:09,716 - Model updated successfully
+2025-05-18 00:35:09,805 - Model saved successfully to model_artifacts\current_model.json
+2025-05-18 00:35:09,805 - Update complete. MAE: 54.71, R2: -205.7385
+2025-05-18 00:35:29,835 - Processed data shape: (1830, 97)
+2025-05-18 00:35:30,067 - Model trained successfully
+2025-05-18 00:35:30,075 - Validation metrics: {'mae': 1.3148374557495117, 'r2': 0.7085263729095459}
+2025-05-18 00:35:30,077 - Metrics saved to model_artifacts\metrics\metrics_20250518_003530.json
+2025-05-18 00:35:30,201 - Processed data shape: (1830, 97)
+2025-05-18 00:35:30,826 - Validation metrics: {'cv_scores': [-1.1017117500305176, -0.9311465620994568, -2.1257431507110596], 'cv_mean_score': -1.386200487613678}
+2025-05-18 00:35:30,829 - Metrics saved to model_artifacts\metrics\metrics_20250518_003530.json
+2025-05-18 00:35:30,964 - Processed data shape: (1830, 97)
+2025-05-18 00:35:32,029 - Validation metrics: {'tscv_scores': [-1.0706719160079956, -1.0899066925048828, -1.2983386516571045, -0.8248155117034912, -3.4947922229766846], 'tscv_mean_score': -1.5557049989700318}
+2025-05-18 00:35:32,032 - Metrics saved to model_artifacts\metrics\metrics_20250518_003532.json
+2025-05-18 00:35:32,086 - Artifacts saved to model_artifacts
+2025-05-18 00:46:35,016 - Preprocessor loaded from preprocessors/preprocessor.pkl
+2025-05-18 00:46:55,936 - Processing batch of shape (1586, 33)
+2025-05-18 00:46:56,050 - Update failed: [00:46:56] C:\actions-runner\_work\xgboost\xgboost\src\learner.cc:1479: Check failed: learner_model_param_.num_feature == p_fmat->Info().num_col_ (97 vs. 100) : Number of columns does not match number of features in booster.
+2025-05-18 00:46:56,051 - Command failed: [00:46:56] C:\actions-runner\_work\xgboost\xgboost\src\learner.cc:1479: Check failed: learner_model_param_.num_feature == p_fmat->Info().num_col_ (97 vs. 100) : Number of columns does not match number of features in booster.
+2025-05-18 00:47:35,873 - Preprocessor loaded from preprocessors/preprocessor.pkl
+2025-05-18 00:47:58,781 - Processing batch of shape (1586, 33)
+2025-05-18 00:47:58,887 - Update failed: [00:47:58] C:\actions-runner\_work\xgboost\xgboost\src\learner.cc:1479: Check failed: learner_model_param_.num_feature == p_fmat->Info().num_col_ (97 vs. 100) : Number of columns does not match number of features in booster.
+2025-05-18 00:47:58,888 - Command failed: [00:47:58] C:\actions-runner\_work\xgboost\xgboost\src\learner.cc:1479: Check failed: learner_model_param_.num_feature == p_fmat->Info().num_col_ (97 vs. 100) : Number of columns does not match number of features in booster.
+2025-05-18 00:49:02,331 - Reading static data...
+2025-05-18 00:49:02,331 - Note: it may take several time
+2025-05-18 00:49:11,357 - Reading dynamic data...
+2025-05-18 00:49:11,358 - Note: it may take several time
+2025-05-18 00:49:19,156 - Creating train dataset...
+2025-05-18 00:49:35,616 - Creating batches...
+2025-05-18 00:50:38,288 - Initial training data shape: (471441, 35)
+2025-05-18 00:50:43,688 - Processed data shape: (436460, 100)
+2025-05-18 00:50:43,889 - Preprocessor saved
+2025-05-18 00:50:52,601 - Model trained successfully
+2025-05-18 00:50:52,674 - Model saved successfully to model_artifacts\current_model.json
+2025-05-18 00:50:52,675 - Initial model trained and saved
+2025-05-18 00:50:53,612 - Model saved successfully to model_artifacts\current_model.json
+2025-05-18 00:50:53,616 - Preprocessor saved to /preprocessor.pkl
+2025-05-18 00:51:28,234 - Preprocessor loaded from preprocessors/preprocessor.pkl
+2025-05-18 00:51:46,615 - Processing batch of shape (1586, 33)
+2025-05-18 00:51:47,488 - Model updated successfully
+2025-05-18 00:51:47,793 - Model saved successfully to model_artifacts\current_model.json
+2025-05-18 00:51:47,798 - Update complete. MAE: 53.18, R2: -133.6711
+2025-05-18 00:52:07,154 - Processed data shape: (1394, 95)
+2025-05-18 00:52:07,341 - Model trained successfully
+2025-05-18 00:52:07,347 - Validation metrics: {'mae': 1.6198183298110962, 'r2': 0.5807629823684692}
+2025-05-18 00:52:07,348 - Metrics saved to model_artifacts\metrics\metrics_20250518_005207.json
+2025-05-18 00:52:07,445 - Processed data shape: (1394, 95)
+2025-05-18 00:52:07,914 - Validation metrics: {'cv_scores': [-0.9117393493652344, -0.9903380274772644, -2.636460304260254], 'cv_mean_score': -1.5128458937009175}
+2025-05-18 00:52:07,916 - Metrics saved to model_artifacts\metrics\metrics_20250518_005207.json
+2025-05-18 00:52:08,031 - Processed data shape: (1394, 95)
+2025-05-18 00:52:09,884 - Validation metrics: {'tscv_scores': [-0.9031305909156799, -0.9401642084121704, -0.8253248929977417, -0.7566159963607788, -4.515179634094238], 'tscv_mean_score': -1.588083064556122}
+2025-05-18 00:52:09,887 - Metrics saved to model_artifacts\metrics\metrics_20250518_005209.json
+2025-05-18 00:52:09,947 - Artifacts saved to model_artifacts
+2025-05-18 00:52:53,639 - Preprocessor loaded from preprocessors/preprocessor.pkl
+2025-05-18 00:53:11,686 - Processing batch of shape (1394, 33)
+2025-05-18 00:53:11,803 - Update failed: [00:53:11] C:\actions-runner\_work\xgboost\xgboost\src\learner.cc:1479: Check failed: learner_model_param_.num_feature == p_fmat->Info().num_col_ (95 vs. 100) : Number of columns does not match number of features in booster.
+2025-05-18 00:53:11,804 - Command failed: [00:53:11] C:\actions-runner\_work\xgboost\xgboost\src\learner.cc:1479: Check failed: learner_model_param_.num_feature == p_fmat->Info().num_col_ (95 vs. 100) : Number of columns does not match number of features in booster.
+2025-05-18 00:55:18,883 - Reading static data...
+2025-05-18 00:55:18,883 - Note: it may take several time
+2025-05-18 00:55:28,846 - Reading dynamic data...
+2025-05-18 00:55:28,846 - Note: it may take several time
+2025-05-18 00:55:32,026 - Creating train dataset...
+2025-05-18 00:55:45,800 - Creating batches...
+2025-05-18 00:56:26,489 - Initial training data shape: (471441, 35)
+2025-05-18 00:56:31,023 - Processed data shape: (436460, 100)
+2025-05-18 00:56:31,231 - Preprocessor saved
+2025-05-18 00:56:38,572 - Model trained successfully
+2025-05-18 00:56:38,628 - Model saved successfully to model_artifacts\current_model.json
+2025-05-18 00:56:38,629 - Initial model trained and saved
+2025-05-18 00:56:39,262 - Model saved successfully to model_artifacts\current_model.json
+2025-05-18 00:56:39,264 - Preprocessor saved to /preprocessor.pkl
+2025-05-18 00:56:48,888 - Preprocessor loaded from preprocessors/preprocessor.pkl
+2025-05-18 00:57:10,500 - Processing batch of shape (1394, 33)
+2025-05-18 00:57:10,809 - Model updated successfully
+2025-05-18 00:57:10,871 - Model saved successfully to model_artifacts\current_model.json
+2025-05-18 00:57:10,872 - Update complete. MAE: 20.70, R2: -25.7382
+2025-05-18 00:57:19,362 - Preprocessor loaded from preprocessors/preprocessor.pkl
+2025-05-18 00:57:36,900 - Processing batch of shape (1394, 33)
+2025-05-18 00:57:38,098 - Model updated successfully
+2025-05-18 00:57:38,391 - Model saved successfully to model_artifacts\current_model.json
+2025-05-18 00:57:38,391 - Update complete. MAE: 20.86, R2: -26.3746
+2025-05-18 00:58:12,619 - Preprocessor loaded from preprocessors/preprocessor.pkl
+2025-05-18 00:58:29,915 - Processing batch of shape (1394, 33)
+2025-05-18 00:58:30,342 - Model updated successfully
+2025-05-18 00:58:30,452 - Model saved successfully to model_artifacts\current_model.json
+2025-05-18 00:58:30,453 - Update complete. MAE: 20.87, R2: -26.3838
+2025-05-18 00:58:51,325 - Preprocessor loaded from preprocessors/preprocessor.pkl
+2025-05-18 00:59:12,978 - Processing batch of shape (1394, 33)
+2025-05-18 00:59:13,551 - Model updated successfully
+2025-05-18 00:59:13,692 - Model saved successfully to model_artifacts\current_model.json
+2025-05-18 00:59:13,693 - Update complete. MAE: 20.87, R2: -26.3809
+2025-05-18 00:59:20,881 - Preprocessor loaded from preprocessors/preprocessor.pkl
+2025-05-18 00:59:40,716 - Processing batch of shape (1394, 33)
+2025-05-18 00:59:41,811 - Model updated successfully
+2025-05-18 00:59:42,024 - Model saved successfully to model_artifacts\current_model.json
+2025-05-18 00:59:42,024 - Update complete. MAE: 20.87, R2: -26.3773
+2025-05-18 01:00:06,108 - Preprocessor loaded from preprocessors/preprocessor.pkl
+2025-05-18 01:00:30,270 - Processing batch of shape (1394, 33)
+2025-05-18 01:00:31,458 - Model updated successfully
+2025-05-18 01:00:31,650 - Model saved successfully to model_artifacts\current_model.json
+2025-05-18 01:00:31,650 - Update complete. MAE: 20.88, R2: -26.3799
+2025-05-18 01:00:39,582 - Preprocessor loaded from preprocessors/preprocessor.pkl
+2025-05-18 01:01:05,230 - Processing batch of shape (1394, 33)
+2025-05-18 01:01:06,007 - Model updated successfully
+2025-05-18 01:01:06,208 - Model saved successfully to model_artifacts\current_model.json
+2025-05-18 01:01:06,209 - Update complete. MAE: 20.88, R2: -26.3769
+2025-05-18 01:01:31,100 - Preprocessor loaded from preprocessors/preprocessor.pkl
+2025-05-18 01:01:54,341 - Processing batch of shape (1394, 33)
+2025-05-18 01:01:55,135 - Model updated successfully
+2025-05-18 01:01:55,328 - Model saved successfully to model_artifacts\current_model.json
+2025-05-18 01:01:55,329 - Update complete. MAE: 20.89, R2: -26.3746
+2025-05-18 01:02:02,127 - Preprocessor loaded from preprocessors/preprocessor.pkl
+2025-05-18 01:02:23,666 - Processing batch of shape (1394, 33)
+2025-05-18 01:02:24,582 - Model updated successfully
+2025-05-18 01:02:24,891 - Model saved successfully to model_artifacts\current_model.json
+2025-05-18 01:02:24,892 - Update complete. MAE: 20.89, R2: -26.3731
+2025-05-18 01:03:09,561 - Preprocessor loaded from preprocessors/preprocessor.pkl
+2025-05-18 01:03:27,949 - Processing batch of shape (1394, 33)
+2025-05-18 01:03:28,941 - Model updated successfully
+2025-05-18 01:03:29,212 - Model saved successfully to model_artifacts\current_model.json
+2025-05-18 01:03:29,212 - Update complete. MAE: 20.89, R2: -26.3780
+2025-05-18 01:03:36,251 - Preprocessor loaded from preprocessors/preprocessor.pkl
+2025-05-18 01:04:01,662 - Processing batch of shape (1394, 33)
+2025-05-18 01:04:02,766 - Model updated successfully
+2025-05-18 01:04:03,010 - Model saved successfully to model_artifacts\current_model.json
+2025-05-18 01:04:03,011 - Update complete. MAE: 20.89, R2: -26.3808
+2025-05-18 01:04:18,052 - Preprocessor loaded from preprocessors/preprocessor.pkl
+2025-05-18 01:04:35,165 - Processing batch of shape (1394, 33)
+2025-05-18 01:04:36,141 - Model updated successfully
+2025-05-18 01:04:36,393 - Model saved successfully to model_artifacts\current_model.json
+2025-05-18 01:04:36,393 - Update complete. MAE: 20.89, R2: -26.3813
+2025-05-18 01:04:53,224 - Processed data shape: (1019, 95)
+2025-05-18 01:04:53,359 - Model trained successfully
+2025-05-18 01:04:53,364 - Validation metrics: {'mae': 1.393143892288208, 'r2': 0.2882242798805237}
+2025-05-18 01:04:53,366 - Metrics saved to model_artifacts\metrics\metrics_20250518_010453.json
+2025-05-18 01:04:53,451 - Processed data shape: (1019, 95)
+2025-05-18 01:04:53,879 - Validation metrics: {'cv_scores': [-0.8671727180480957, -1.0660701990127563, -1.8093547821044922], 'cv_mean_score': -1.247532566388448}
+2025-05-18 01:04:53,881 - Metrics saved to model_artifacts\metrics\metrics_20250518_010453.json
+2025-05-18 01:04:53,975 - Processed data shape: (1019, 95)
+2025-05-18 01:04:54,666 - Validation metrics: {'tscv_scores': [-0.8518980741500854, -0.8654604554176331, -0.8126164674758911, -0.8073951601982117, -2.7780725955963135], 'tscv_mean_score': -1.223088550567627}
+2025-05-18 01:04:54,668 - Metrics saved to model_artifacts\metrics\metrics_20250518_010454.json
+2025-05-18 01:05:17,327 - Preprocessor loaded from preprocessors/preprocessor.pkl
+2025-05-18 01:05:36,077 - Processing batch of shape (1394, 33)
+2025-05-18 01:05:36,192 - Update failed: [01:05:36] C:\actions-runner\_work\xgboost\xgboost\src\learner.cc:1479: Check failed: learner_model_param_.num_feature == p_fmat->Info().num_col_ (95 vs. 100) : Number of columns does not match number of features in booster.
+2025-05-18 01:05:36,193 - Command failed: [01:05:36] C:\actions-runner\_work\xgboost\xgboost\src\learner.cc:1479: Check failed: learner_model_param_.num_feature == p_fmat->Info().num_col_ (95 vs. 100) : Number of columns does not match number of features in booster.
+2025-05-18 01:13:22,174 - Reading static data...
+2025-05-18 01:13:22,175 - Note: it may take several time
+2025-05-18 01:13:33,473 - Reading dynamic data...
+2025-05-18 01:13:33,474 - Note: it may take several time
+2025-05-18 01:13:38,546 - Creating train dataset...
+2025-05-18 01:13:54,578 - Creating batches...
+2025-05-18 01:14:41,249 - Initial training data shape: (471441, 35)
+2025-05-18 01:14:46,475 - Processed data shape: (436460, 100)
+2025-05-18 01:14:46,735 - Preprocessor saved
+2025-05-18 01:14:52,644 - Model saved successfully to model_artifacts\current_model.json
+2025-05-18 01:14:52,645 - Initial model trained and saved
+2025-05-18 01:14:53,155 - Model saved successfully to model_artifacts\current_model.json
+2025-05-18 01:14:53,157 - Preprocessor saved to /preprocessor.pkl
+2025-05-18 01:14:53,157 - Initial train MAE: 1.01, R2: 0.9816
+2025-05-18 01:15:14,592 - Processed data shape: (7401, 98)
+2025-05-18 01:15:14,920 - Validation metrics: {'mae': 1.1468039751052856, 'r2': 0.7291690111160278}
+2025-05-18 01:15:15,103 - Processed data shape: (7401, 98)
+2025-05-18 01:15:15,978 - Validation metrics: {'cv_scores': [-0.8387018442153931, -0.9095361232757568, -2.155762195587158], 'cv_mean_score': -1.3013333876927693}
+2025-05-18 01:15:16,173 - Processed data shape: (7401, 98)
+2025-05-18 01:15:17,437 - Validation metrics: {'tscv_scores': [-0.9182941913604736, -0.8917334079742432, -0.8369046449661255, -0.7302671074867249, -3.591916799545288], 'tscv_mean_score': -1.393823230266571}
+2025-05-18 01:15:17,481 - Artifacts saved to model_artifacts
+2025-05-18 01:15:25,824 - Preprocessor loaded from preprocessors/preprocessor.pkl
+2025-05-18 01:15:49,391 - Processing batch of shape (10873, 33)
+2025-05-18 01:15:49,997 - Model saved successfully to model_artifacts\current_model.json
+2025-05-18 01:15:49,998 - Update complete. MAE: 54.71, R2: -205.7385
+2025-05-18 01:16:07,621 - Processed data shape: (1830, 97)
+2025-05-18 01:16:07,770 - Validation metrics: {'mae': 1.3148374557495117, 'r2': 0.7085263729095459}
+2025-05-18 01:16:07,870 - Processed data shape: (1830, 97)
+2025-05-18 01:16:08,852 - Validation metrics: {'cv_scores': [-1.1017117500305176, -0.9311465620994568, -2.1257431507110596], 'cv_mean_score': -1.386200487613678}
+2025-05-18 01:16:08,982 - Processed data shape: (1830, 97)
+2025-05-18 01:16:10,049 - Validation metrics: {'tscv_scores': [-1.0706719160079956, -1.0899066925048828, -1.2983386516571045, -0.8248155117034912, -3.4947922229766846], 'tscv_mean_score': -1.5557049989700318}
+2025-05-18 01:16:10,106 - Artifacts saved to model_artifacts
+2025-05-18 01:16:19,911 - Preprocessor loaded from preprocessors/preprocessor.pkl
+2025-05-18 01:16:37,013 - Processing batch of shape (1586, 33)
+2025-05-18 01:16:37,384 - Model saved successfully to model_artifacts\current_model.json
+2025-05-18 01:16:37,385 - Update complete. MAE: 6.22, R2: -0.6181
+2025-05-18 01:16:54,812 - Processed data shape: (1394, 95)
+2025-05-18 01:16:54,931 - Validation metrics: {'mae': 1.6198183298110962, 'r2': 0.5807629823684692}
+2025-05-18 01:16:55,017 - Processed data shape: (1394, 95)
+2025-05-18 01:16:55,417 - Validation metrics: {'cv_scores': [-0.9117393493652344, -0.9903380274772644, -2.636460304260254], 'cv_mean_score': -1.5128458937009175}
+2025-05-18 01:16:55,516 - Processed data shape: (1394, 95)
+2025-05-18 01:16:56,327 - Validation metrics: {'tscv_scores': [-0.9031305909156799, -0.9401642084121704, -0.8253248929977417, -0.7566159963607788, -4.515179634094238], 'tscv_mean_score': -1.588083064556122}
+2025-05-18 01:16:56,390 - Artifacts saved to model_artifacts
+2025-05-18 01:18:54,809 - Preprocessor loaded from preprocessors/preprocessor.pkl
+2025-05-18 01:19:17,100 - Processing batch of shape (1394, 33)
+2025-05-18 01:19:17,526 - Model saved successfully to model_artifacts\current_model.json
+2025-05-18 01:19:17,527 - Update complete. MAE: 3.59, R2: -0.0255
+2025-05-18 01:19:36,566 - Processed data shape: (1019, 95)
+2025-05-18 01:19:37,379 - Validation metrics: {'mae': 1.393143892288208, 'r2': 0.2882242798805237}
+2025-05-18 01:19:37,389 - Metrics saved to model_artifacts\metrics\metrics_20250518_011937.json
+2025-05-18 01:19:37,552 - Processed data shape: (1019, 95)
+2025-05-18 01:19:39,904 - Validation metrics: {'cv_scores': [-0.8671727180480957, -1.0660701990127563, -1.8093547821044922], 'cv_mean_score': -1.247532566388448}
+2025-05-18 01:19:39,907 - Metrics saved to model_artifacts\metrics\metrics_20250518_011939.json
+2025-05-18 01:19:40,050 - Processed data shape: (1019, 95)
+2025-05-18 01:19:41,290 - Validation metrics: {'tscv_scores': [-0.8518980741500854, -0.8654604554176331, -0.8126164674758911, -0.8073951601982117, -2.7780725955963135], 'tscv_mean_score': -1.223088550567627}
+2025-05-18 01:19:41,292 - Metrics saved to model_artifacts\metrics\metrics_20250518_011941.json
+2025-05-18 01:19:41,371 - Artifacts saved to model_artifacts

@@ -41,7 +41,7 @@ class CreditModel:
                 random_state=42
             )
 
-    def train(self, X, y, update=False):
+    def train(self, X, y, update=False, save=False):
         """Обучение/дообучение модели"""
         if update and self.model is not None:
             self.model = xgb.XGBRegressor(learning_rate = 0.05)
@@ -51,9 +51,9 @@ class CreditModel:
                          xgb_model=self.model)
         else:
             self.model.fit(X, y)
-        
-        self._save_model()
-        logger.info(f"Model {'updated' if update else 'trained'} successfully")
+        if save:
+            self._save_model()
+            logger.info(f"Model {'updated' if update else 'trained'} successfully")
 
     def predict(self, X):
         return self.model.predict(X)
