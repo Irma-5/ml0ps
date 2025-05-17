@@ -9,8 +9,9 @@ from main_пон import initialize_pipeline, update_model,validate_model, save_a
 from model import CreditModel
 from preprocessing import CreditDataPreprocessor
 from validation import ModelValidator
-# TRACKER_FILE = "batch_tracker.txt"
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(message)s",
+handlers=[logging.FileHandler('logfile.log', encoding='utf-8'),
+          logging.StreamHandler()])
 logger = logging.getLogger(__name__)
 
 def load_components():
