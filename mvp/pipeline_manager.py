@@ -1,174 +1,220 @@
+#!/usr/bin/env python3
 import argparse
-import json
-import joblib
-import pandas as pd
-from pathlib import Path
 import logging
-from typing import Dict, Any
-from xgboost import XGBRegressor
-import re
-# Инициализация логирования
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+import joblib
+import pickle
+import sys
+from pathlib import Path
+from main_пон import initialize_pipeline, update_model,validate_model, save_artifacts,train_initial_model, CONFIG
+from model import CreditModel
+from preprocessing import CreditDataPreprocessor
+from validation import ModelValidator
+# TRACKER_FILE = "batch_tracker.txt"
+logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-class PipelineManager:
-    def __init__(self, artifacts_dir: str = "model_artifacts"):
-        self.artifacts_dir = Path(artifacts_dir)
-        self.model = None
-        self.preprocessor = None
-        self.config = None
-        self.metrics = None
-        
-    def load_artifacts(self):
-        """Загрузка артефактов модели"""
-        try:
-            self.model = XGBRegressor()
-            self.model.load_model(self.artifacts_dir / "model.xgb")
-            self.preprocessor = joblib.load(self.artifacts_dir / "preprocessor.joblib")
-            with open(self.artifacts_dir / "config.json") as f:
-                self.config = json.load(f)
-            validation_data = joblib.load(self.artifacts_dir / "validation_artifacts.joblib")
-            self.metrics = validation_data['metrics']
-            logger.info("Artifacts loaded successfully")
-        except Exception as e:
-            logger.error(f"Error loading artifacts: {str(e)}")
-            raise
-
-    def inference(self, data_path: str) -> pd.DataFrame:
-        """Выполнение предсказаний"""
-        try:
-            data = pd.read_csv(data_path)
-            processed_data = self.preprocessor.transform(data)
-            predictions = self.model.predict(processed_data)
-            data['predicted_time'] = predictions
-            return data
-        except Exception as e:
-            logger.error(f"Inference failed: {str(e)}")
-            raise
-
-    def update(self, new_data_path: str):
-        """Обновление модели новыми данными"""
-        try:
-            new_data = pd.read_csv(new_data_path)
-            X, y = self.preprocessor.transform(new_data), new_data[self.config['target_column']].values
-            self.model.fit(X, y, xgb_model=self.model.get_booster())
-            self.model.save_model(self.artifacts_dir / "model.xgb")
-            logger.info("Model updated successfully")
-        except Exception as e:
-            logger.error(f"Model update failed: {str(e)}")
-            raise
-
-    def get_summary(self) -> Dict[str, Any]:
-        """Получение информации о модели"""
-        return {
-            "model_type": type(self.model).__name__,
-            "features_used": self.config.get('n_features'),
-            "metrics": self.metrics,
-            "config": self.config
-        }
-    
-    @staticmethod
-    def update_config(param: str, value: str):
-        """Обновление параметров в DataLoader/config.py с полной заменой значения"""
-        config_path = Path("DataLoader/config.py")
-        try:
-            with open(config_path, 'r') as f:
-                content = f.read()
-
-            # Шаблон для поиска параметра в формате "param": value
-            pattern = re.compile(
-                rf'("{param}"\s*:\s*)([^,\n]+)(,?\s*#.*?)?',
-                re.DOTALL
-            )
-
-            match = pattern.search(content)
-            if not match:
-                raise ValueError(f"Параметр {param} не найден в config.py")
-
-            # Обработка значений по типам
-            if param in ['year_to_split', 'num_batch']:
-                try:
-                    new_value = int(value)
-                except ValueError:
-                    raise ValueError(f"{param} должен быть целым числом")
-                replacement = f'{new_value}'
-            else:
-                # Сохраняем raw string для path
-                if '\\' in value and not value.startswith('r"'):
-                    replacement = f'r"{value}"'
-                else:
-                    replacement = f'"{value}"'
-
-            # Замена только значения параметра
-            updated_content = content[:match.start(2)] + replacement + content[match.end(2):]
-
-            with open(config_path, 'w') as f:
-                f.write(updated_content)
-
-            logger.info(f"Параметр {param} обновлен: {match.group(2)} → {replacement}")
-
-        except Exception as e:
-            logger.error(f"Ошибка обновления конфига: {e}")
-            raise
-def main():
-    parser = argparse.ArgumentParser(description="Credit Model Pipeline Manager")
-    subparsers = parser.add_subparsers(dest='command')
-
-
-    # Inference command
-    infer_parser = subparsers.add_parser('inference', help='Make predictions')
-    infer_parser.add_argument('--data', type=str, required=False, help='Path to input data')
-
-    # Update command
-    update_parser = subparsers.add_parser('update', help='Update model with new data')
-    update_parser.add_argument('--data', type=str, required=False, help='Path to new training data')
-
-    # Summary command
-    subparsers.add_parser('summary', help='Get model summary')
-
-    #Config command
-    config_parser = subparsers.add_parser('setconfig', help='Обновление параметров конфигурации')
-    config_parser.add_argument('--param', 
-                               type=str, 
-                               required=True, 
-                               choices=['path', 'year_to_split', 'num_batch'],
-                               help='Название параметра для обновления')
-    config_parser.add_argument('--value',
-                              type=str,
-                              required=True,
-                              help='Новое значение параметра')
-    
-    args = parser.parse_args()
-    manager = PipelineManager()
-    
+def load_components():
+    """Load existing model and preprocessor"""
     try:
-        if args.command == 'setconfig':
-            manager.update_config(args.param, args.value)
-        else:
-            manager.load_artifacts()
-
-        manager.load_artifacts()
-        if args.command == 'inference':
-            result = manager.inference(args.data)
-            output_path = f"predictions_{datetime.now().strftime('%Y%m%d%H%M%S')}.csv"
-            result.to_csv(output_path, index=False)
-            logger.info(f"Predictions saved to {output_path}")
-            
-        elif args.command == 'update':
-            manager.update(args.data)
-            
-        elif args.command == 'summary':
-            summary = manager.get_summary()
-            print("\nModel Summary:")
-            print(f"Model type: {summary['model_type']}")
-            print(f"Features used: {summary['features_used']}")
-            print("\nMetrics:")
-            print(f"Initial MAE: {summary['metrics']['initial_metrics']['mae']:.2f}")
-            print(f"Updated MAE: {summary['metrics']['updated_metrics']['mae']:.2f}")
-            
+        preprocessor = joblib.load(Path(CONFIG['preprocessor_path']) / "preprocessor.joblib")
+        model = CreditModel(CONFIG)
+        model.load_model()
+        return model, preprocessor
     except Exception as e:
-        logger.error(f"Command failed: {str(e)}")
-        exit(1)
+        logger.error(f"Failed to load model components: {e}")
+        raise
+
+def create_model():
+    """Run model inference on new data"""
+    try:
+        # Initial pipeline setup
+        data_loader = initialize_pipeline()
+        # main_data = data_loader.get_data()
+        model, preprocessor, X_test, y_test = train_initial_model(data_loader)
+        preds = model.predict(X_test)
+        metrics_init = model.evaluate(X_test, y_test)
+        # with open('model.pkl', 'wb') as f:
+        #     pickle.dump(model, f)
+        # with open('processor.pkl', 'wb') as f:
+        #     pickle.dump(preprocessor, f)
+        model.save_model()
+        preprocessor.save("")
+        logger.info(f"Initial train MAE: {metrics_init['mae']:.2f}, R2: {metrics_init['r2']:.4f}")
+        # # Initialize validator
+        val_config = {
+            'model_storage':  CONFIG['model_storage'],
+            'random_state':   CONFIG['random_state'],
+            'test_size':      CONFIG['test_size'],
+            'cv_folds':       CONFIG['cv_folds'],
+            'n_splits':       CONFIG.get('n_splits', 5),
+            'scoring':        'neg_mean_absolute_error',
+            'target_column':  CONFIG['target_column']
+        }
+        validator = ModelValidator(val_config)
+        
+        # Initial validation
+        val_metrics = validate_model(validator, data_loader.get_data())
+        
+        # Save initial artifacts
+        save_artifacts(model, preprocessor, CONFIG, validator,val_metrics)
+        with open('dataloader.pkl', 'wb') as f:
+            pickle.dump(data_loader, f)
+    except Exception as e:
+        logger.error(f"Initial pipeline failed: {e}")
+        sys.exit(1)
+
+def inference(data_path):
+    """Run model inference on new data"""
+    try:
+        with open('dataloader.pkl', 'rb') as f:
+            data_loader = pickle.load(f)
+        with open('model.pkl', 'rb') as f:
+            model = pickle.load(f)
+        with open('processor.pkl', 'rb') as f:
+            preprocessor = pickle.load(f)
+        # model, preprocessor = load_components()
+        data = data_loader.get_data().copy()
+        data = data[data['zero_balance_code'] == 1.0].copy() 
+        # model, preprocessor, X_test, y_test = train_initial_model(data_loader)
+        X_processed= preprocessor.transform(data)
+        if CONFIG['target_column'] in data.columns:
+            y = data[CONFIG['target_column']].values
+            preds = model.predict(X_processed)
+            metrics_init = model.evaluate(X_processed, y)
+            logger.info(f"Inference MAE: {metrics_init['mae']:.2f}, R2: {metrics_init['r2']:.4f}")
+        else:
+            preds = model.predict(X_processed)
+            logger.info("Inference completed. No target column for evaluation.")
+
+        with open('dataloader.pkl', 'wb') as f:
+            pickle.dump(data_loader, f)
+        return preds
+        # Load and preprocess new data
+        # Add your data loading logic here
+        # processed_data = preprocessor.transform(new_data)
+        # predictions = model.predict(processed_data)
+        # logger.info("Inference completed")
+        # return predictions
+        # validator = ModelValidator({
+        #     'model_storage': CONFIG['model_storage'],
+        #     'random_state': CONFIG['random_state'],
+        #     'target_column': CONFIG['target_column']
+        # })
+        
+        # # Initial validation
+        # val_metrics = validate_model(validator, data_loader.get_data())
+        
+        # # Save artifacts
+        # save_artifacts(model, preprocessor, validator, val_metrics)
+
+    except Exception as e:
+        logger.error(f"Inference failed: {e}")
+        raise
+
+# def get_last_processed_batch():
+#     try:
+#         with open(TRACKER_FILE, "r") as f:
+#             return int(f.read().strip())
+#     except FileNotFoundError:
+#         return 0  # Start from batch 1 (0-indexed)
+
+# def set_last_processed_batch(batch_num):
+#     with open(TRACKER_FILE, "w") as f:
+#         f.write(str(batch_num))
+
+
+def update(batch_number=None):
+    """Update model with a specific or next batch"""
+    try:
+        print("Updating model...")
+        with open('dataloader.pkl', 'rb') as f:
+            data_loader = pickle.load(f)
+        # with open('model.pkl', 'rb') as f:
+        #     model = pickle.load(f)
+        # with open('processor.pkl', 'rb') as f:
+        #     preprocessor = pickle.load(f)
+
+        # batches = load_batches(data_loader)
+        # model, preprocessor = load_components()
+        model = CreditModel(CONFIG)
+        model.load_model()
+        preprocessor = CreditDataPreprocessor(CONFIG)
+        preprocessor.load("")
+        metrics = update_model(data_loader.get_data(), model, preprocessor)
+        print('Reached metrics')
+        # Update artifacts
+        # logger.info(f"Initial train MAE: {metrics_init['mae']:.2f}, R2: {metrics_init['r2']:.4f}")
+        # # Initialize validator
+        val_config = {
+            'model_storage':  CONFIG['model_storage'],
+            'random_state':   CONFIG['random_state'],
+            'test_size':      CONFIG['test_size'],
+            'cv_folds':       CONFIG['cv_folds'],
+            'n_splits':       CONFIG.get('n_splits', 5),
+            'scoring':        'neg_mean_absolute_error',
+            'target_column':  CONFIG['target_column']
+        }
+        validator = ModelValidator(val_config)
+        
+        # Initial validation
+        val_metrics = validate_model(validator, data_loader.get_data())
+        save_artifacts(model, preprocessor, CONFIG, validator,val_metrics)
+        with open('model.pkl', 'wb') as f:
+            pickle.dump(model, f)
+        with open('processor.pkl', 'wb') as f:
+            pickle.dump(preprocessor, f)
+        with open('dataloader.pkl', 'wb') as f:
+            pickle.dump(data_loader, f)
+        # Save initial artifacts
+        
+        return metrics
+    except Exception as e:
+        logger.error(f"Update failed: {e}")
+        raise
+
+def summary():
+    """Show model summary"""
+    try:
+        artifacts = joblib.load("model_artifacts/validation_artifacts.joblib")
+        print("\nModel Summary:")
+        print(f"Latest MAE: {artifacts['metrics']['holdout']['mae']:.2f}")
+        print(f"Latest R2: {artifacts['metrics']['holdout']['r2']:.4f}")
+        print("\nValidation Metrics:")
+        for k, v in artifacts['metrics'].items():
+            print(f"{k.upper()}: MAE={v['mae']:.2f}, R2={v['r2']:.4f}")
+    except Exception as e:
+        logger.error(f"Failed to generate summary: {e}")
+        raise
 
 if __name__ == "__main__":
-    main()
+    parser = argparse.ArgumentParser(description="ML Pipeline Manager")
+    subparsers = parser.add_subparsers(dest='command')
+    #create_model
+    subparsers.add_parser('create_model', help='Create initial model')
+    # Inference command
+    infer_parser = subparsers.add_parser('inference', help='Run model inference')
+    infer_parser.add_argument('--data', type=str, required=False, help='Path to input data')
+    
+    # Update command
+    update_parser = subparsers.add_parser('update', help='Update model with a batch')
+    update_parser.add_argument('--batch', type=int, required=False, help='Specific batch number to use')
+    
+    # Summary command
+    subparsers.add_parser('summary', help='Show model summary')
+    
+    args = parser.parse_args()
+    
+    try:
+        if args.command == 'inference':
+            inference(args.data)
+        elif args.command == 'create_model':
+            create_model()
+        elif args.command == 'update':
+            update(args.batch)
+        elif args.command == 'summary':
+            summary()
+        else:
+            parser.print_help()
+    except Exception as e:
+        logger.error(f"Command failed: {e}")
+        sys.exit(1)
