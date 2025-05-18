@@ -24,6 +24,7 @@ jobs:
         pip install -r requirements.txt
 
     - name: Attempt to download previous artifacts
+      id: download-artifact
       uses: dawidd6/action-download-artifact@v6
       with:
         workflow: cron.yml
@@ -34,6 +35,8 @@ jobs:
       continue-on-error: true
 
     - name: Attempt to download previous artifacts 2
+      id: download-artifact-2
+      if: steps.download-artifact.outcome == 'success'
       uses: dawidd6/action-download-artifact@v6
       with:
         workflow: cron.yml
@@ -43,7 +46,9 @@ jobs:
         branch: main
       continue-on-error: true
       
-    - name: Attempt to download previous artifacts 2
+    - name: Attempt to download previous artifacts 3
+      id: download-artifact-3
+      if: steps.download-artifact-2.outcome == 'success'
       uses: dawidd6/action-download-artifact@v6
       with:
         workflow: cron.yml
@@ -52,8 +57,14 @@ jobs:
         workflow_conclusion: success
         branch: main
       continue-on-error: true
+    
+    - name: Run initial training script
+      if: steps.download-artifact-3.outcome == 'failure'
+      run: |
+        python mvp/pipeline_manager.py create_model
 
     - name: Run training script with periodic artifact generation
+      if: steps.download-artifact-3.outcome == 'success'
       run: |
         python mvp/pipeline_manager.py update
         
