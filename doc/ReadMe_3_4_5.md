@@ -59,6 +59,7 @@ metrics = model.evaluate(X_test, y_test)
 
 model.save_model()
 # — сохраняет модель и metadata (timestamp, input_shape, config).
+# — старые модели так же созраняются и могут быть использованы.
 
 model.load_model()
 # — загружает модель из файла.
@@ -107,6 +108,7 @@ explain_with_lime(X_train, X_test, model.predict, feature_names)
 ```python
 detect_drift(baseline_X, X_new, feature_names, alpha=0.05)
 # — KS-тест по каждому признаку, логгирует drift.
+Возвращает 1 если найден дрифт и 0 если не найден.
 ```
 
 **Config** для `ModelValidator`:
