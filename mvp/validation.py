@@ -105,5 +105,7 @@ def detect_drift(baseline, new_X, feature_names, alpha=0.05):
                 drifted.append(name)
         if drifted:
             logger.warning(f"Drift detected in features: {drifted}")
+            return 1
         else:
             logger.info("No drift detected")
+            return 0

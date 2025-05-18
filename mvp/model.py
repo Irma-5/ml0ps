@@ -84,7 +84,11 @@ class CreditModel:
             save_path = Path(custom_path) if custom_path else self.model_path
             save_dir = save_path.parent
             save_dir.mkdir(parents=True, exist_ok=True)
-            
+            if save_path.exists():
+                old = Path(save_path)
+                old.rename(f"old_model_moved_after{datetime.now().strftime("%Y%m%d_%H%M%S")}.json")
+                old = Path(save_dir / 'model_metadata.json')
+                old.rename(f"old_model_moved_after{datetime.now().strftime("%Y%m%d_%H%M%S")}_METADATA.json")
             self.model.save_model(save_path)
             
             metadata = {

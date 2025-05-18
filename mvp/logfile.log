@@ -307,3 +307,88 @@
 2025-05-18 01:19:41,290 - Validation metrics: {'tscv_scores': [-0.8518980741500854, -0.8654604554176331, -0.8126164674758911, -0.8073951601982117, -2.7780725955963135], 'tscv_mean_score': -1.223088550567627}
 2025-05-18 01:19:41,292 - Metrics saved to model_artifacts\metrics\metrics_20250518_011941.json
 2025-05-18 01:19:41,371 - Artifacts saved to model_artifacts
+2025-05-18 08:35:28,220 - Preprocessor loaded from preprocessors/preprocessor.pkl
+2025-05-18 08:35:46,351 - Processing batch of shape (898, 33)
+2025-05-18 08:35:46,724 - Model saved successfully to model_artifacts\current_model.json
+2025-05-18 08:35:46,724 - Update complete. MAE: 9.59, R2: -4.3625
+2025-05-18 08:36:03,682 - Processed data shape: (684, 93)
+2025-05-18 08:36:03,776 - Validation metrics: {'mae': 1.4097087383270264, 'r2': 0.366110622882843}
+2025-05-18 08:36:03,787 - Metrics saved to model_artifacts\metrics\metrics_20250518_083603.json
+2025-05-18 08:36:03,847 - Processed data shape: (684, 93)
+2025-05-18 08:36:04,051 - Validation metrics: {'cv_scores': [-1.1740593910217285, -1.3650013208389282, -2.6605091094970703], 'cv_mean_score': -1.7331899404525757}
+2025-05-18 08:36:04,051 - Metrics saved to model_artifacts\metrics\metrics_20250518_083604.json
+2025-05-18 08:36:04,115 - Processed data shape: (684, 93)
+2025-05-18 08:36:04,613 - Validation metrics: {'tscv_scores': [-0.8024078011512756, -1.0951297283172607, -0.9397821426391602, -2.3484082221984863, -7.286292552947998], 'tscv_mean_score': -2.4944040894508364}
+2025-05-18 08:36:04,627 - Metrics saved to model_artifacts\metrics\metrics_20250518_083604.json
+2025-05-18 08:36:04,684 - Artifacts saved to model_artifacts
+2025-05-18 08:38:59,903 - Preprocessor loaded from preprocessors/preprocessor.pkl
+2025-05-18 08:39:18,597 - Processing batch of shape (578, 33)
+2025-05-18 08:39:19,100 - Model saved successfully to model_artifacts\current_model.json
+2025-05-18 08:39:19,100 - Update complete. MAE: 9.44, R2: -6.7281
+2025-05-18 08:39:35,226 - Processed data shape: (418, 91)
+2025-05-18 08:39:35,631 - Validation metrics: {'mae': 1.6070843935012817, 'r2': 0.31683027744293213}
+2025-05-18 08:39:35,631 - Metrics saved to model_artifacts\metrics\metrics_20250518_083935.json
+2025-05-18 08:39:35,695 - Processed data shape: (418, 91)
+2025-05-18 08:39:36,032 - Validation metrics: {'cv_scores': [-0.8596121668815613, -1.2021836042404175, -1.7314084768295288], 'cv_mean_score': -1.264401415983836}
+2025-05-18 08:39:36,037 - Metrics saved to model_artifacts\metrics\metrics_20250518_083936.json
+2025-05-18 08:39:36,089 - Processed data shape: (418, 91)
+2025-05-18 08:39:36,369 - Validation metrics: {'tscv_scores': [-0.9737969040870667, -0.9555633068084717, -1.1741063594818115, -0.968166172504425, -2.486220121383667], 'tscv_mean_score': -1.3115705728530884}
+2025-05-18 08:39:36,369 - Metrics saved to model_artifacts\metrics\metrics_20250518_083936.json
+2025-05-18 08:39:36,406 - Artifacts saved to model_artifacts
+2025-05-18 08:44:41,281 - Preprocessor loaded from preprocessors/preprocessor.pkl
+2025-05-18 08:44:44,876 - Update failed: [Errno 2] No such file or directory: 'C:\\Users\\Никита\\Documents\\Python Scripts\\mlops\\ml0ps-main\\ml0ps\\mvp\\DataLoader\\datasets\\batch_13.csv'
+2025-05-18 08:44:44,876 - Command failed: [Errno 2] No such file or directory: 'C:\\Users\\Никита\\Documents\\Python Scripts\\mlops\\ml0ps-main\\ml0ps\\mvp\\DataLoader\\datasets\\batch_13.csv'
+2025-05-18 08:45:07,078 - Preprocessor loaded from preprocessors/preprocessor.pkl
+2025-05-18 08:45:10,998 - Update failed: [Errno 2] No such file or directory: 'C:\\Users\\Никита\\Documents\\Python Scripts\\mlops\\ml0ps-main\\ml0ps\\mvp\\DataLoader\\datasets\\batch_13.csv'
+2025-05-18 08:45:10,998 - Command failed: [Errno 2] No such file or directory: 'C:\\Users\\Никита\\Documents\\Python Scripts\\mlops\\ml0ps-main\\ml0ps\\mvp\\DataLoader\\datasets\\batch_13.csv'
+2025-05-18 08:45:40,190 - Reading static data...
+2025-05-18 08:45:40,191 - Note: it may take several time
+2025-05-18 08:45:47,106 - Reading dynamic data...
+2025-05-18 08:45:47,111 - Note: it may take several time
+2025-05-18 08:45:50,248 - Creating train dataset...
+2025-05-18 08:46:03,324 - Creating batches...
+2025-05-18 08:46:46,723 - Initial training data shape: (471441, 35)
+2025-05-18 08:46:51,040 - Processed data shape: (436460, 100)
+2025-05-18 08:46:51,262 - Preprocessor saved
+2025-05-18 08:46:57,284 - Model saved successfully to model_artifacts\current_model.json
+2025-05-18 08:46:57,284 - Initial model trained and saved
+2025-05-18 08:46:57,811 - Failed to save model: [WinError 183] Невозможно создать файл, так как он уже существует: 'model_artifacts\\current_model.json' -> 'old_model_moved_after20250518_084657.json'
+2025-05-18 08:46:57,812 - Initial pipeline failed: [WinError 183] Невозможно создать файл, так как он уже существует: 'model_artifacts\\current_model.json' -> 'old_model_moved_after20250518_084657.json'
+2025-05-18 08:48:45,300 - Reading static data...
+2025-05-18 08:48:45,304 - Note: it may take several time
+2025-05-18 08:48:52,964 - Reading dynamic data...
+2025-05-18 08:48:52,969 - Note: it may take several time
+2025-05-18 08:48:56,364 - Creating train dataset...
+2025-05-18 08:49:10,674 - Creating batches...
+2025-05-18 08:49:48,937 - Initial training data shape: (471441, 35)
+2025-05-18 08:49:54,309 - Processed data shape: (436460, 100)
+2025-05-18 08:49:54,506 - Preprocessor saved
+2025-05-18 08:49:59,958 - Model saved successfully to model_artifacts\current_model.json
+2025-05-18 08:49:59,959 - Initial model trained and saved
+2025-05-18 08:50:00,404 - Model saved successfully to model_artifacts\current_model.json
+2025-05-18 08:50:00,405 - Preprocessor saved to /preprocessor.pkl
+2025-05-18 08:50:00,406 - Initial train MAE: 1.01, R2: 0.9816
+2025-05-18 08:50:17,980 - Processed data shape: (7401, 98)
+2025-05-18 08:50:18,142 - Validation metrics: {'mae': 1.1468039751052856, 'r2': 0.7291690111160278}
+2025-05-18 08:50:18,150 - Metrics saved to model_artifacts\metrics\metrics_20250518_085018.json
+2025-05-18 08:50:18,275 - Processed data shape: (7401, 98)
+2025-05-18 08:50:18,697 - Validation metrics: {'cv_scores': [-0.8387018442153931, -0.9095361232757568, -2.155762195587158], 'cv_mean_score': -1.3013333876927693}
+2025-05-18 08:50:18,704 - Metrics saved to model_artifacts\metrics\metrics_20250518_085018.json
+2025-05-18 08:50:18,819 - Processed data shape: (7401, 98)
+2025-05-18 08:50:19,433 - Validation metrics: {'tscv_scores': [-0.9182941913604736, -0.8917334079742432, -0.8369046449661255, -0.7302671074867249, -3.591916799545288], 'tscv_mean_score': -1.393823230266571}
+2025-05-18 08:50:19,435 - Metrics saved to model_artifacts\metrics\metrics_20250518_085019.json
+2025-05-18 08:50:19,452 - Artifacts saved to model_artifacts
+2025-05-18 08:50:29,939 - Preprocessor loaded from preprocessors/preprocessor.pkl
+2025-05-18 08:50:48,486 - Processing batch of shape (10873, 33)
+2025-05-18 08:50:48,943 - Model saved successfully to model_artifacts\current_model.json
+2025-05-18 08:50:48,943 - Update complete. MAE: 54.71, R2: -205.7385
+2025-05-18 08:51:05,182 - Processed data shape: (1830, 97)
+2025-05-18 08:51:05,286 - Validation metrics: {'mae': 1.3148374557495117, 'r2': 0.7085263729095459}
+2025-05-18 08:51:05,286 - Metrics saved to model_artifacts\metrics\metrics_20250518_085105.json
+2025-05-18 08:51:05,348 - Processed data shape: (1830, 97)
+2025-05-18 08:51:05,613 - Validation metrics: {'cv_scores': [-1.1017117500305176, -0.9311465620994568, -2.1257431507110596], 'cv_mean_score': -1.386200487613678}
+2025-05-18 08:51:05,613 - Metrics saved to model_artifacts\metrics\metrics_20250518_085105.json
+2025-05-18 08:51:05,687 - Processed data shape: (1830, 97)
+2025-05-18 08:51:06,049 - Validation metrics: {'tscv_scores': [-1.0706719160079956, -1.0899066925048828, -1.2983386516571045, -0.8248155117034912, -3.4947922229766846], 'tscv_mean_score': -1.5557049989700318}
+2025-05-18 08:51:06,051 - Metrics saved to model_artifacts\metrics\metrics_20250518_085106.json
+2025-05-18 08:51:06,073 - Artifacts saved to model_artifacts
