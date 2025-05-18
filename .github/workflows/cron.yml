@@ -55,6 +55,12 @@ jobs:
         workflow_conclusion: success
         branch: main
       continue-on-error: true
+
+    - name: Показать содержимое директории
+      run: ls -R
+
+    - name: Показать содержимое директории
+      run: ls -R
     
     - name: Run initial training script
       if: steps.download-artifact-3.outcome == 'failure'
