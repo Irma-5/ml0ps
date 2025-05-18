@@ -38,15 +38,11 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: model
-        path: current_model.json
+        path: ./model_artifacts/current_model.json
         
     - name: Upload dataloader
       uses: actions/upload-artifact@v4
       with:
         name: dataloader
         path: dataloader.pkl
-    - name: Upload TensorBoard logs
-      uses: actions/upload-artifact@v4
-      with:
-        name: tensorboard-logs
-        path: runs/
+
