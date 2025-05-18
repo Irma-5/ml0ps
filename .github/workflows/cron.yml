@@ -27,14 +27,14 @@ jobs:
       uses: dawidd6/action-download-artifact@v6
       with:
         workflow: cron.yml
-        name: training-artifacts
-        path: loc
+        name: current_model.json
+        path: ./models
         workflow_conclusion: success
         branch: main
       continue-on-error: true
 
     - name: Run training script with periodic artifact generation
-      run: python mvp/main_пон.py
+      run: python mvp/pipeline_manager.py update
 
     - name: Upload new artifacts
       uses: actions/upload-artifact@v4
