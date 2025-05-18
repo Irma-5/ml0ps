@@ -23,7 +23,7 @@ jobs:
 
     - name: Run training script
       run: |
-        python mvp/main_пон.py
+        python mvp/pipeline_manager.py create_model
 
     - name: Upload logs
       uses: actions/upload-artifact@v4
