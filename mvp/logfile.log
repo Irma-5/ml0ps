@@ -392,3 +392,44 @@
 2025-05-18 08:51:06,049 - Validation metrics: {'tscv_scores': [-1.0706719160079956, -1.0899066925048828, -1.2983386516571045, -0.8248155117034912, -3.4947922229766846], 'tscv_mean_score': -1.5557049989700318}
 2025-05-18 08:51:06,051 - Metrics saved to model_artifacts\metrics\metrics_20250518_085106.json
 2025-05-18 08:51:06,073 - Artifacts saved to model_artifacts
+2025-05-19 00:31:12,146 - Update failed: 'utf-8' codec can't decode byte 0xcd in position 124: invalid continuation byte
+2025-05-19 00:31:12,146 - Command failed: 'utf-8' codec can't decode byte 0xcd in position 124: invalid continuation byte
+2025-05-19 00:32:45,760 - Reading static data...
+2025-05-19 00:32:45,760 - Note: it may take several time
+2025-05-19 00:32:48,365 - Reading dynamic data...
+2025-05-19 00:32:48,365 - Note: it may take several time
+2025-05-19 00:32:49,527 - Creating train dataset...
+2025-05-19 00:32:53,987 - Creating batches...
+2025-05-19 00:33:14,848 - Initial training data shape: (471441, 35)
+2025-05-19 00:33:16,177 - Processed data shape: (436460, 100)
+2025-05-19 00:33:16,234 - Preprocessor saved
+2025-05-19 00:33:19,050 - Model saved successfully to model_artifacts\current_model.json
+2025-05-19 00:33:19,050 - Initial model trained and saved
+2025-05-19 00:33:19,289 - Model saved successfully to model_artifacts\current_model.json
+2025-05-19 00:33:19,289 - Preprocessor saved to /preprocessor.pkl
+2025-05-19 00:33:19,289 - Initial train MAE: 3.06, R2: 0.9585
+2025-05-19 00:33:26,287 - Processed data shape: (7401, 98)
+2025-05-19 00:33:26,341 - Validation metrics: {'mae': 1.1468039751052856, 'r2': 0.7291690111160278}
+2025-05-19 00:33:26,341 - Metrics saved to model_artifacts\metrics\metrics_20250519_003326.json
+2025-05-19 00:33:26,399 - Processed data shape: (7401, 98)
+2025-05-19 00:33:26,554 - Validation metrics: {'cv_scores': [-0.8387018442153931, -0.9095361232757568, -2.155762195587158], 'cv_mean_score': -1.3013333876927693}
+2025-05-19 00:33:26,554 - Metrics saved to model_artifacts\metrics\metrics_20250519_003326.json
+2025-05-19 00:33:26,612 - Processed data shape: (7401, 98)
+2025-05-19 00:33:26,844 - Validation metrics: {'tscv_scores': [-0.9182941913604736, -0.8917334079742432, -0.8369046449661255, -0.7302671074867249, -3.591916799545288], 'tscv_mean_score': -1.393823230266571}
+2025-05-19 00:33:26,844 - Metrics saved to model_artifacts\metrics\metrics_20250519_003326.json
+2025-05-19 00:33:26,863 - Artifacts saved to model_artifacts
+2025-05-19 00:33:38,085 - Model load - ok
+2025-05-19 00:33:38,085 - Preprocessor loaded from preprocessors/preprocessor.pkl
+2025-05-19 00:33:45,267 - Processing batch of shape (10873, 33)
+2025-05-19 00:33:45,516 - Model saved successfully to model_artifacts\current_model.json
+2025-05-19 00:33:45,516 - Update complete. MAE: 46.03, R2: -144.8365
+2025-05-19 00:33:52,250 - Processed data shape: (1830, 97)
+2025-05-19 00:33:52,289 - Validation metrics: {'mae': 1.3148374557495117, 'r2': 0.7085263729095459}
+2025-05-19 00:33:52,289 - Metrics saved to model_artifacts\metrics\metrics_20250519_003352.json
+2025-05-19 00:33:52,317 - Processed data shape: (1830, 97)
+2025-05-19 00:33:52,415 - Validation metrics: {'cv_scores': [-1.1017117500305176, -0.9311465620994568, -2.1257431507110596], 'cv_mean_score': -1.386200487613678}
+2025-05-19 00:33:52,415 - Metrics saved to model_artifacts\metrics\metrics_20250519_003352.json
+2025-05-19 00:33:52,447 - Processed data shape: (1830, 97)
+2025-05-19 00:33:52,595 - Validation metrics: {'tscv_scores': [-1.0706719160079956, -1.0899066925048828, -1.2983386516571045, -0.8248155117034912, -3.4947922229766846], 'tscv_mean_score': -1.5557049989700318}
+2025-05-19 00:33:52,595 - Metrics saved to model_artifacts\metrics\metrics_20250519_003352.json
+2025-05-19 00:33:52,595 - Artifacts saved to model_artifacts

@@ -1,0 +1,17 @@
+{
+    "saved_at": "2025-05-19T00:33:19.050653",
+    "input_shape": 100,
+    "model_type": "<class 'xgboost.sklearn.XGBRegressor'>",
+    "config": {
+        "model_storage": "./model_artifacts",
+        "preprocessor_path": "./model_artifacts",
+        "model_path": "./model_artifacts/model",
+        "random_state": 42,
+        "test_size": 0.2,
+        "target_column": "time",
+        "hyperparam_tuning": false,
+        "cv_folds": 3,
+        "n_iter": 20,
+        "n_features": 100
+    }
+}
