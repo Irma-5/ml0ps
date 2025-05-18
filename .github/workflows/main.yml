@@ -25,8 +25,24 @@ jobs:
       run: |
         python mvp/pipeline_manager.py create_model
 
+    - name: Показать содержимое директории
+      run: ls -R
+
     - name: Upload logs
       uses: actions/upload-artifact@v4
       with:
         name: training-logs
         path: logfile.log
+
+    - name: Upload model
+      uses: actions/upload-artifact@v4
+      with:
+        name: model
+        path: ./model_artifacts/current_model.json
+        
+    - name: Upload dataloader
+      uses: actions/upload-artifact@v4
+      with:
+        name: dataloader
+        path: dataloader.pkl
+
