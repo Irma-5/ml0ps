@@ -21,7 +21,7 @@ logger = logging.getLogger(__name__)
 CONFIG = {
     'model_storage': './model_artifacts',
     'preprocessor_path': './model_artifacts',
-    # 'model_path': './model_artifacts/model',
+    'model_path': './model_artifacts/model',
     'random_state': 42,
     'test_size': 0.2,
     'target_column': 'time',
