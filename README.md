@@ -1,8 +1,8 @@
 # ml0ps
 # Artifact structure  
 model_artifacts  
-├── model.xgb                # Сериализованная модель XGBoost  
-├── preprocessor.joblib      # Состояние препроцессора. 
+├── current_model.json           # Сериализованная модель XGBoost  
+├── preprocessor.pkl      # Состояние препроцессора. 
 ├── config.json              # Параметры конфигурации  
 ├── validation_artifacts.joblib # Метрики и валидатор  
 └── requirements.txt         # Версии зависимостей  
