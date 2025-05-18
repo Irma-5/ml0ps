@@ -34,16 +34,29 @@ jobs:
       continue-on-error: true
 
     - name: Run training script with periodic artifact generation
-      run: python mvp/pipeline_manager.py update
-
-    - name: Upload new artifacts
-      uses: actions/upload-artifact@v4
-      with:
-        name: training-artifacts
-        path: loc/
-
+      run: |
+        python mvp/pipeline_manager.py update
+        
     - name: Upload logs
       uses: actions/upload-artifact@v4
       with:
         name: training-logs
         path: logfile.log
+
+    - name: Upload model
+      uses: actions/upload-artifact@v4
+      with:
+        name: model
+        path: current_model.json
+
+    - name: Upload dataloader
+      uses: actions/upload-artifact@v4
+      with:
+        name: dataloader
+        path: dataloader.pkl
+
+    - name: Upload TensorBoard logs
+      uses: actions/upload-artifact@v4
+      with:
+        name: tensorboard-logs
+        path: runs/
