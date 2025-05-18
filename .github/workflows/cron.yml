@@ -40,7 +40,7 @@ jobs:
       with:
         workflow: cron.yml
         name: preprocessor
-        path: .
+        path: ./preprocessors
         workflow_conclusion: success
         branch: main
       continue-on-error: true
