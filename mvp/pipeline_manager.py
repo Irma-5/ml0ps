@@ -141,6 +141,7 @@ def update(batch_number=None):
         # model, preprocessor = load_components()
         model = CreditModel(CONFIG)
         model.load_model()
+        logger.info("Model load - ok")
         preprocessor = CreditDataPreprocessor(CONFIG)
         preprocessor.load("preprocessors")
         temp = data_loader.get_data()
