@@ -36,7 +36,6 @@ jobs:
 
     - name: Attempt to download previous artifacts 2
       id: download-artifact-2
-      if: steps.download-artifact.outcome == 'success'
       uses: dawidd6/action-download-artifact@v6
       with:
         workflow: cron.yml
@@ -48,7 +47,6 @@ jobs:
       
     - name: Attempt to download previous artifacts 3
       id: download-artifact-3
-      if: steps.download-artifact-2.outcome == 'success'
       uses: dawidd6/action-download-artifact@v6
       with:
         workflow: cron.yml
