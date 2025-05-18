@@ -67,7 +67,7 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: model
-        path: ./model_artifacts
+        path: ./model_artifacts/current_model.json
 
     - name: Upload dataloader
       uses: actions/upload-artifact@v4
