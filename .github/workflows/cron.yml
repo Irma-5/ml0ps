@@ -27,8 +27,8 @@ jobs:
       uses: dawidd6/action-download-artifact@v6
       with:
         workflow: cron.yml
-        name: current_model.json
-        path: ./model_artifacts
+        name: model
+        path: ./model_artifacts/current_model.json
         workflow_conclusion: success
         branch: main
       continue-on-error: true
@@ -37,8 +37,8 @@ jobs:
       uses: dawidd6/action-download-artifact@v6
       with:
         workflow: cron.yml
-        name: preprocessor.pkl
-        path: .
+        name: preprocessor
+        path: preprocessor.pkl
         workflow_conclusion: success
         branch: main
       continue-on-error: true
@@ -47,8 +47,8 @@ jobs:
       uses: dawidd6/action-download-artifact@v6
       with:
         workflow: cron.yml
-        name: dataloader.pkl
-        path: .
+        name: dataloader
+        path: dataloader.pkl
         workflow_conclusion: success
         branch: main
       continue-on-error: true
@@ -74,5 +74,11 @@ jobs:
       with:
         name: dataloader
         path: dataloader.pkl
+        
+    - name: Upload preprocessor
+      uses: actions/upload-artifact@v4
+      with:
+        name: preprocessor
+        path: preprocessor.pkl
         
 
