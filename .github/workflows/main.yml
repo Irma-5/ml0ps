@@ -30,3 +30,20 @@ jobs:
       with:
         name: training-logs
         path: logfile.log
+
+    - name: Upload model
+      uses: actions/upload-artifact@v4
+      with:
+        name: model
+        path: ./models/current_model.json
+        
+    - name: Upload dataloader
+      uses: actions/upload-artifact@v4
+      with:
+        name: dataloader
+        path: dataloader.pkl
+    - name: Upload TensorBoard logs
+      uses: actions/upload-artifact@v4
+      with:
+        name: tensorboard-logs
+        path: runs/
