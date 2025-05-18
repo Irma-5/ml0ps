@@ -29,7 +29,7 @@ jobs:
       with:
         workflow: cron.yml
         name: model
-        path: ./model_artifacts/current_model.json
+        path: .
         workflow_conclusion: success
         branch: main
       continue-on-error: true
@@ -40,7 +40,7 @@ jobs:
       with:
         workflow: cron.yml
         name: preprocessor
-        path: preprocessor.pkl
+        path: .
         workflow_conclusion: success
         branch: main
       continue-on-error: true
@@ -51,7 +51,7 @@ jobs:
       with:
         workflow: cron.yml
         name: dataloader
-        path: dataloader.pkl
+        path: .
         workflow_conclusion: success
         branch: main
       continue-on-error: true
