@@ -21,11 +21,11 @@ handlers=[logging.FileHandler('logfile.log', encoding='utf-8'),
 class DataLoader:
     def __init__(self, params):
         warnings.filterwarnings("ignore")
-        BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+        BASE_DIR = . # os.path.dirname(os.path.abspath(__file__))
         self.num_batches = params.get('num_batches', 13)
-        self.raw_path = os.path.join(os.path.realpath(BASE_DIR), 'raw_data')
-        self.types_path = os.path.join(os.path.realpath(BASE_DIR), 'types.pickle')
-        self.datapath = os.path.join(os.path.realpath(BASE_DIR), 'datasets')
+        self.raw_path = 'raw_data' # os.path.join(os.path.realpath(BASE_DIR), 'raw_data')
+        self.types_path = 'types.pickle' # os.path.join(os.path.realpath(BASE_DIR), 'types.pickle')
+        self.datapath = 'datasets' # os.path.join(os.path.realpath(BASE_DIR), 'datasets')
         self.year = params.get("year_to_split", 2010)
         self.step = 0
 
