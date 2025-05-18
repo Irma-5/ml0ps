@@ -29,7 +29,7 @@ jobs:
       with:
         workflow: cron.yml
         name: model
-        path: .
+        path: ./model_artifacts
         workflow_conclusion: success
         branch: main
       continue-on-error: true
