@@ -120,7 +120,7 @@ class DataLoader:
         return None
 
     def _create_time_parameter(self, df):
-        df.zero_balance_code.fillna(-1, inplace=True)
+        df['zero_balance_code'] = df['zero_balance_code'].fillna(-1)
         df['time'] = None
         df['cens'] = (df.zero_balance_code != -1)
         df.sort_values(by=['id_loan', 'period'])
@@ -325,4 +325,3 @@ class DataQualityEvaluator:
 # data_loader.create_datasets(1)
 # for _ in range(DATA_LOADER_PARAMS['num_batch']+2):
 #       df = data_loader.get_data(verbose=2)
-
