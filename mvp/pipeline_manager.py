@@ -4,6 +4,8 @@ import logging
 import joblib
 import pickle
 import sys
+import os
+import json
 from pathlib import Path
 from main_пон import initialize_pipeline, update_model,validate_model, save_artifacts,train_initial_model, CONFIG
 from model import CreditModel
@@ -28,6 +30,17 @@ def load_components():
 def create_model():
     """Run model inference on new data"""
     try:
+        #delete metric history because
+        file_path = 'model_artifacts/metric_his.json'
+        try:
+            os.remove(file_path)  # Deletes the file
+            print(f"File {file_path} deleted successfully")
+        except FileNotFoundError:
+            print(f"File {file_path} not found")
+        except PermissionError:
+            print(f"Permission denied to delete {file_path}")
+        except Exception as e:
+            print(f"Error deleting file: {e}")
         # Initial pipeline setup
         data_loader = initialize_pipeline()
         # main_data = data_loader.get_data()
@@ -57,7 +70,7 @@ def create_model():
         val_metrics = validate_model(validator, data_loader.get_data())
         
         # Save initial artifacts
-        save_artifacts(model, preprocessor, CONFIG, validator,val_metrics)
+        save_artifacts(model, preprocessor, CONFIG, validator,val_metrics,batch_num=int(data_loader.step))
 
         with open('dataloader.pkl', 'wb') as f:
             pickle.dump(data_loader, f)
@@ -137,7 +150,7 @@ def update(batch_number=None):
         # Initial validation
         val_metrics = validate_model(validator, data_loader.get_data())
         
-        save_artifacts(model, preprocessor, CONFIG, validator,val_metrics)
+        save_artifacts(model, preprocessor, CONFIG, validator,val_metrics,batch_num=int(data_loader.step))
         with open('model.pkl', 'wb') as f:
             pickle.dump(model, f)
         with open('processor.pkl', 'wb') as f:
@@ -152,15 +165,41 @@ def update(batch_number=None):
         raise
 
 def summary():
-    """Show model summary"""
+    """Show model summary with historical metrics"""
     try:
-        artifacts = joblib.load("model_artifacts/validation_artifacts.joblib")
-        print("\nModel Summary:")
-        print(f"Latest MAE: {artifacts['metrics']['holdout']['mae']:.2f}")
-        print(f"Latest R2: {artifacts['metrics']['holdout']['r2']:.4f}")
-        print("\nValidation Metrics:")
-        for k, v in artifacts['metrics'].items():
-            print(f"{k.upper()}: MAE={v['mae']:.2f}, R2={v['r2']:.4f}")
+        artifact_dir = Path(CONFIG['model_storage'])
+        metrics_path = artifact_dir / "metric_his.json"
+        
+        if not metrics_path.exists():
+            raise FileNotFoundError(f"No metrics found at {metrics_path}")
+
+        with open(metrics_path, 'r') as f:
+            history = json.load(f)
+
+        if not history:
+            logger.warning("No metrics history available")
+            return
+
+        # Get latest and best metrics
+        latest = history[-1]
+        best_entry = min(history, key=lambda x: x['holdout']['mae'])
+        
+        print("\n=== Model Summary ===")
+        print(f"Total batches processed: {len(history)}")
+        print(f"\nLatest Batch (#{latest['num']}):")
+        print(f"Holdout MAE: {latest['holdout']['mae']:.2f} | R2: {latest['holdout']['r2']:.4f}")
+        print(f"CV MAE: {-latest['cv']['cv_mean_score']:.2f} | TimeSeries CV MAE: {-latest['timeseries']['tscv_mean_score']:.2f}")
+        
+        print("\nBest Performance (Batch #{})".format(best_entry['num']))
+        print(f"Best Holdout MAE: {best_entry['holdout']['mae']:.2f}")
+        print(f"Corresponding R2: {best_entry['holdout']['r2']:.4f}")
+
+        # Trend analysis
+        last_3_mae = [entry['holdout']['mae'] for entry in history[-3:]]
+        trend = "improving" if last_3_mae == sorted(last_3_mae, reverse=False) else \
+                "degrading" if last_3_mae == sorted(last_3_mae, reverse=True) else "fluctuating"
+        print(f"\nPerformance Trend: {trend} (last 3 batches)")
+
     except Exception as e:
         logger.error(f"Failed to generate summary: {e}")
         raise
