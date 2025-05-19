@@ -33,7 +33,7 @@ jobs:
       
     - name: Run tests
       run: |
-        python -m unittest discover tests
+        python -m unittest discover mvp/tests
 
     - name: Upload logs
       uses: actions/upload-artifact@v4
