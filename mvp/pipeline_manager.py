@@ -11,6 +11,9 @@ from main_пон import initialize_pipeline, update_model,validate_model, save_a
 from model import CreditModel
 from preprocessing import CreditDataPreprocessor
 from validation import ModelValidator, detect_drift
+from view import explain_with_shap,explain_with_lime
+from sklearn.model_selection import train_test_split
+import time
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(message)s",
 handlers=[logging.FileHandler('logfile.log', encoding='utf-8'),
           logging.StreamHandler()])
@@ -102,6 +105,21 @@ def inference(data_path):
             preds = model.predict(X_processed)
             logger.info("Inference completed. No target column for evaluation.")
 
+        #SHAP
+        print("Making beauty with shap")
+        feature_names = preprocessor.feature_names
+        explain_with_shap(model_obj=model,X=X_processed[:100],feature_names=feature_names)
+        # X_update = preprocessor.transform(data)
+        # y_update = X_processed[CONFIG['target_column']].values
+    
+        # X_up_train, X_up_test, y_up_train, y_up_test = train_test_split(
+        #     X_processed, y_update,
+        #     test_size=0.15,
+        #     random_state=CONFIG['random_state'],
+        #     shuffle=True
+        # )
+        # explain_with_lime(X_up_train, X_up_test,model.predict(), feature_names=feature_names)
+
         with open('dataloader.pkl', 'wb') as f:
             pickle.dump(data_loader, f)
         return preds
@@ -119,23 +137,15 @@ def update(batch_number=None):
         print("Updating model...")
         with open('dataloader.pkl', 'rb') as f:
             data_loader = pickle.load(f)
-        # with open('model.pkl', 'rb') as f:
-        #     model = pickle.load(f)
-        # with open('processor.pkl', 'rb') as f:
-        #     preprocessor = pickle.load(f)
 
-        # batches = load_batches(data_loader)
-        # model, preprocessor = load_components()
         model = CreditModel(CONFIG)
         model.load_model()
         preprocessor = CreditDataPreprocessor(CONFIG)
         preprocessor.load("preprocessors")
         temp = data_loader.get_data()
-        metrics = update_model(temp, model, preprocessor)
+        metrics,X_up_train,X_up_test = (update_model(temp, model, preprocessor))
         print('Reached metrics')
-        # Update artifacts
-        # logger.info(f"Initial train MAE: {metrics_init['mae']:.2f}, R2: {metrics_init['r2']:.4f}")
-        # # Initialize validator
+        # Initialize validator
         val_config = {
             'model_storage':  CONFIG['model_storage'],
             'random_state':   CONFIG['random_state'],
@@ -149,7 +159,9 @@ def update(batch_number=None):
         
         # Initial validation
         val_metrics = validate_model(validator, data_loader.get_data())
-        
+        print("Making beauty with lime")
+        feature_names = preprocessor.feature_names
+        explain_with_lime(X_up_train, X_up_test,model.predict, feature_names=feature_names)
         save_artifacts(model, preprocessor, CONFIG, validator,val_metrics,batch_num=int(data_loader.step))
         with open('model.pkl', 'wb') as f:
             pickle.dump(model, f)
@@ -157,7 +169,8 @@ def update(batch_number=None):
             pickle.dump(preprocessor, f)
         with open('dataloader.pkl', 'wb') as f:
             pickle.dump(data_loader, f)
-        # Save initial artifacts
+
+
         
         return metrics
     except Exception as e:
