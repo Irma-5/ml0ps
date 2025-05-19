@@ -87,8 +87,11 @@ class CreditModel:
             if save_path.exists():
                 old = Path(save_path)
                 old.rename(f"old_model_moved_after{datetime.now().strftime("%Y%m%d_%H%M%S")}.json")
-                old = Path(save_dir / 'model_metadata.json')
-                old.rename(f"old_model_moved_after{datetime.now().strftime("%Y%m%d_%H%M%S")}_METADATA.json")
+                try:
+                    old = Path(save_dir / 'model_metadata.json')
+                    old.rename(f"old_model_moved_after{datetime.now().strftime("%Y%m%d_%H%M%S")}_METADATA.json")
+                except:
+                    pass
             self.model.save_model(save_path)
             
             metadata = {
