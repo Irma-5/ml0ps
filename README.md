@@ -30,26 +30,27 @@ pip install -r requirements.txt
 
 ## Использование
 
-### Предсказания
+## Создание модели  
+python3 pipeline_manager.py inference create_model
+
+## Предсказания
 ```bash
-python3 pipeline_manager.py inference --data path/to/data.csv
+python3 pipeline_manager.py inference
 ```
 Результат сохраняется в predictions_<timestamp>.csv
 
-### Обновление модели
+## Обновление модели
 ```bash
-python3 pipeline_manager.py update --data path/to/new_data.csv
+python3 pipeline_manager.py update 
 ```
 
-### Получение статистики
+## Получение статистики
 ```bash
 python3 pipeline_manager.py summary
 ```
-### Изменение конфигурации данных напрямую
-Path указывает на папку в котором лежит config.py. В нем реализован словарь DATA_LOADER_PARAMS с парами path->str,year_to_split->int, num_batch->int. year_to_split>= 2000 и на момент реализации <=2023.
-```bash
-python3 pipeline_manager.py setconfig --param path --value "cofig_folder"
-```
+## Изменение конфигурации данных напрямую
+config.json хранит все изменяемые параметры
+
 ```bash
 python3 pipeline_manager.py setconfig --param year_to_split --value 2010
 ```
@@ -59,13 +60,16 @@ python3 pipeline_manager.py setconfig --param num_batch --value 10
 ## Структура артефактов
 ```
 model_artifacts/
-├── model.xgb
+├── model.xgb - лучшая модель на валидации по метрике мае
 ├── preprocessor.joblib
-├── config.json
-└── validation_artifacts.joblib
+├── metrics
+├──metric_his.json
+└── model_metadata.json
 ```
 
 ## Поддерживаемые форматы данных
 - CSV с колонками согласно обучающим данным
 - Кодировка: UTF-8
 - Разделитель: запятая
+
+## Подробнее про работу модели написано в документации в папке doc
