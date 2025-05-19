@@ -1,7 +1,7 @@
 import unittest
-from model import CreditModel
-from preprocessing import CreditDataPreprocessor
-from main_пон import CONFIG
+from ..model import CreditModel
+from ..preprocessing import CreditDataPreprocessor
+from ..main_пон import CONFIG
 
 class TestModel(unittest.TestCase):
     def test_model_loading(self):
