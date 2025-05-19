@@ -45,17 +45,6 @@ jobs:
         branch: main
       continue-on-error: true
       
-    - name: Attempt to download previous artifacts - config
-      id: download-artifact-1-1 
-      uses: dawidd6/action-download-artifact@v6
-      with:
-        workflow: cron_new_new.yml
-        name: conf
-        path: ./model_artifacts
-        workflow_conclusion: success
-        branch: main
-      continue-on-error: true
-
     - name: Attempt to download previous artifacts - preprocessor
       id: download-artifact-2
       uses: dawidd6/action-download-artifact@v6
@@ -117,12 +106,6 @@ jobs:
         name: meta
         path: ./model_artifacts/model_metadata.json
 
-    - name: Upload config
-      uses: actions/upload-artifact@v4
-      with:
-        name: conf
-        path: ./model_artifacts/config.json
-
     - name: Upload dataloader
       uses: actions/upload-artifact@v4
       with:
@@ -139,4 +122,4 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: preprocessor
-        path: preprocessor.pkl
+        path: ./preprocessors/preprocessor.pkl
