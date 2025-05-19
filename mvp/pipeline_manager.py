@@ -8,7 +8,7 @@ from pathlib import Path
 from main_пон import initialize_pipeline, update_model,validate_model, save_artifacts,train_initial_model, CONFIG
 from model import CreditModel
 from preprocessing import CreditDataPreprocessor
-from validation import ModelValidator
+from validation import ModelValidator, detect_drift
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(message)s",
 handlers=[logging.FileHandler('logfile.log', encoding='utf-8'),
           logging.StreamHandler()])
@@ -76,7 +76,7 @@ def inference(data_path):
         with open('processor.pkl', 'rb') as f:
             preprocessor = pickle.load(f)
         # model, preprocessor = load_components()
-        data = data_loader.get_data().copy()
+        data = data_loader.get_data(freeze = True).copy()
         data = data[data['zero_balance_code'] == 1.0].copy() 
         # model, preprocessor, X_test, y_test = train_initial_model(data_loader)
         X_processed= preprocessor.transform(data)
@@ -92,38 +92,12 @@ def inference(data_path):
         with open('dataloader.pkl', 'wb') as f:
             pickle.dump(data_loader, f)
         return preds
-        # Load and preprocess new data
-        # Add your data loading logic here
-        # processed_data = preprocessor.transform(new_data)
-        # predictions = model.predict(processed_data)
-        # logger.info("Inference completed")
-        # return predictions
-        # validator = ModelValidator({
-        #     'model_storage': CONFIG['model_storage'],
-        #     'random_state': CONFIG['random_state'],
-        #     'target_column': CONFIG['target_column']
-        # })
-        
-        # # Initial validation
-        # val_metrics = validate_model(validator, data_loader.get_data())
-        
-        # # Save artifacts
-        # save_artifacts(model, preprocessor, validator, val_metrics)
+
 
     except Exception as e:
         logger.error(f"Inference failed: {e}")
         raise
 
-# def get_last_processed_batch():
-#     try:
-#         with open(TRACKER_FILE, "r") as f:
-#             return int(f.read().strip())
-#     except FileNotFoundError:
-#         return 0  # Start from batch 1 (0-indexed)
-
-# def set_last_processed_batch(batch_num):
-#     with open(TRACKER_FILE, "w") as f:
-#         f.write(str(batch_num))
 
 
 def update(batch_number=None):
@@ -141,7 +115,6 @@ def update(batch_number=None):
         # model, preprocessor = load_components()
         model = CreditModel(CONFIG)
         model.load_model()
-        logger.info("Model load - ok")
         preprocessor = CreditDataPreprocessor(CONFIG)
         preprocessor.load("preprocessors")
         temp = data_loader.get_data()
