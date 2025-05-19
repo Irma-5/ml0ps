@@ -73,7 +73,7 @@ jobs:
       with:
         workflow: cron_new_new.yml
         name: datasets
-        path: ./mvp/DataLoader
+        path: ./mvp/DataLoader/datasets
         workflow_conclusion: success
         branch: main
       continue-on-error: true
