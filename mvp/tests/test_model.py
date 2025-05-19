@@ -11,7 +11,7 @@ class TestModel(unittest.TestCase):
 
     def test_preprocessor(self):
         preprocessor = CreditDataPreprocessor(CONFIG)
-        preprocessor.load("preprocessors")
+        preprocessor.load("mvp/preprocessors")
         self.assertIsNotNone(preprocessor)
 
 if __name__ == "__main__":
