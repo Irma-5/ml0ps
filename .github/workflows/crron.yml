@@ -79,11 +79,11 @@ jobs:
       continue-on-error: true
     
     - name: Run initial training script
-      if: steps.download-artifact-4.outcome == 'failure'
+      if: steps.download-artifact-2.outcome == 'failure'
       run: |
         python mvp/pipeline_manager.py create_model
     - name: Run training script with periodic artifact generation
-      if: steps.download-artifact-4.outcome == 'success'
+      if: steps.download-artifact-2.outcome == 'success'
       run: |
         python mvp/pipeline_manager.py update
         
