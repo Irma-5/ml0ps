@@ -136,7 +136,7 @@ def update_model(batch, model, preprocessor):
     end_memory = process.memory_info().rss / 1024**2
     logging.info(f"Memory usage: {end_memory - start_memory:.2f} MB (Delta) | ")
     
-    return metrics
+    return metrics,X_up_train,X_up_test
 
 def validate_model(validator, data):
     """Run validation routines"""
