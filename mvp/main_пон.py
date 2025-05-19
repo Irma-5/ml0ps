@@ -19,7 +19,7 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(
 logger = logging.getLogger(__name__)
 
 # Global config (could also be loaded/saved)
-with open('model_artifacts/config.json', 'r') as f:
+with open('mvp/model_artifacts/config.json', 'r') as f:
     CONFIG = json.load(f)
 del CONFIG["year_to_split"]
 del CONFIG["num_batch"]
