@@ -19,10 +19,15 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(
 logger = logging.getLogger(__name__)
 
 # Global config (could also be loaded/saved)
-with open('mvp/model_artifacts/config.json', 'r') as f:
-    CONFIG = json.load(f)
-del CONFIG["year_to_split"]
-del CONFIG["num_batch"]
+CONFIG = {"model_storage": "./model_artifacts",
+        "preprocessor_path": "./model_artifacts",
+        "model_path": "./model_artifacts/model",
+        "random_state": 42,
+        "test_size": 0.2,
+        "target_column": "time",
+        "hyperparam_tuning": False,
+        "cv_folds": 3,
+        "n_iter": 20}
 def initialize_pipeline():
     """Initial setup and data loading"""
     process = psutil.Process()
