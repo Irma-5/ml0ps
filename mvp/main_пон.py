@@ -6,22 +6,23 @@ from pathlib import Path
 from sklearn.model_selection import train_test_split
 import joblib
 import sys
+from datetime import datetime
+import time
+import psutil
 from DataLoader.DataClasses import DataLoader
 from DataLoader.config import DATA_LOADER_PARAMS
 from preprocessing import CreditDataPreprocessor
 from model import CreditModel
 from validation import ModelValidator, detect_drift, explain_with_lime, explain_with_shap
 import pickle
-logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(message)s",
-handlers=[logging.FileHandler('logfile.log', encoding='utf-8'),
-          logging.StreamHandler()])
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 
 # Global config (could also be loaded/saved)
 CONFIG = {
     'model_storage': './model_artifacts',
     'preprocessor_path': './model_artifacts',
-    'model_path': './model_artifacts/model',
+    # 'model_path': './model_artifacts/model',
     'random_state': 42,
     'test_size': 0.2,
     'target_column': 'time',
@@ -32,8 +33,15 @@ CONFIG = {
 
 def initialize_pipeline():
     """Initial setup and data loading"""
+    process = psutil.Process()
+    start_time = time.time()
+    start_memory = process.memory_info().rss / 1024**2
     data_loader = DataLoader(DATA_LOADER_PARAMS)
     data_loader.create_datasets(verbose=True)
+    elapsed_time = time.time() - start_time
+    logger.info(f"Dataset creation time: {elapsed_time:.4f} seconds")
+    end_memory = process.memory_info().rss / 1024**2
+    logging.info(f"Memory usage: {end_memory - start_memory:.2f} MB (Delta) | ")
     return data_loader
 
 # def load_batches(data_loader):
@@ -45,9 +53,15 @@ def initialize_pipeline():
 #         logger.info(f"Loaded batch {i+1}/{DATA_LOADER_PARAMS['num_batch']}")
 #     return batches
 
-def train_initial_model(data_loader):
+def train_initial_model(data_loader, flag=True):
     """Initial model training"""
-    train_df = data_loader.get_data()
+    process = psutil.Process()
+    start_time = time.time()
+    start_memory = process.memory_info().rss / 1024**2
+    if flag:
+        train_df = data_loader.get_data()
+    else:
+        train_df = data_loader
     logger.info(f"Initial training data shape: {train_df.shape}")
 
     preprocessor = CreditDataPreprocessor(CONFIG)
@@ -96,10 +110,18 @@ def train_initial_model(data_loader):
     model.train(X_train, y_train, update=False)
     model.save_model()
     logger.info("Initial model trained and saved")
+    elapsed_time = time.time() - start_time
+    logger.info(f"Trainig time: {elapsed_time:.4f} seconds")
+    end_memory = process.memory_info().rss / 1024**2
+    logging.info(f"Memory usage: {end_memory - start_memory:.2f} MB (Delta) | ")
+    
     return model, preprocessor, X_test, y_test
 
 def update_model(batch, model, preprocessor):
     """Update model with a single batch"""
+    process = psutil.Process()
+    start_time = time.time()
+    start_memory = process.memory_info().rss / 1024**2
     logger.info(f"Processing batch of shape {batch.shape}")
     batch = batch[batch['zero_balance_code'] == 1.0]
     
@@ -117,73 +139,101 @@ def update_model(batch, model, preprocessor):
     metrics = model.evaluate(X_up_test, y_up_test)
     model.save_model()
     logger.info(f"Update complete. MAE: {metrics['mae']:.2f}, R2: {metrics['r2']:.4f}")
+    elapsed_time = time.time() - start_time
+    logger.info(f"Fine-tuning time: {elapsed_time:.4f} seconds")
+    end_memory = process.memory_info().rss / 1024**2
+    logging.info(f"Memory usage: {end_memory - start_memory:.2f} MB (Delta) | ")
+    
     return metrics
 
 def validate_model(validator, data):
     """Run validation routines"""
+    process = psutil.Process()
+
     print("=== Hold-out validation ===")
+    start_time = time.time()
+    start_memory = process.memory_info().rss / 1024**2
     metrics_hold = validator.validate(data, method='holdout')
     validator.save_metrics()
+    elapsed_time1 = time.time() - start_time
+    end_memory1 = process.memory_info().rss / 1024**2
+    
     print("=== K-Fold CV ===")
+    start_time = time.time()
+    start_memory = process.memory_info().rss / 1024**2
     metrics_cv = validator.validate(data, method='cv')
     validator.save_metrics()
+    elapsed_time2 = time.time() - start_time
+    end_memory2 = process.memory_info().rss / 1024**2
+    
     print("=== TimeSeries CV ===")
+    start_time = time.time()
+    start_memory = process.memory_info().rss / 1024**2
     metrics_ts = validator.validate(data, method='timeseries')
     validator.save_metrics()
+    elapsed_time3 = time.time() - start_time
+    end_memory3 = process.memory_info().rss / 1024**2
+
+    logging.info(
+            f"Hold-out validation: {elapsed_time1:.2f}sec and {end_memory1:.2f} MB (Delta) | "
+            f"K-Fold CV: {elapsed_time2:.2f}sec and {end_memory2:.2f} MB (Delta) | "
+            f"TimeSeries CV: {elapsed_time3:.2f}sec and {end_memory3:.2f} MB (Delta) | "
+        )
+    
     return {
         'holdout': metrics_hold,
         'cv': metrics_cv,
         'timeseries': metrics_ts
     }
 
-def save_artifacts(model_obj, preprocessor_obj, config_obj, validator_obj,metrics, artifacts_dir="model_artifacts"):
-    import joblib
+
+def save_artifacts(model_obj, preprocessor_obj, config_obj, validator_obj,metrics, artifacts_dir="model_artifacts", batch_num = 10000):
     artifact_dir = Path(artifacts_dir)
     artifact_dir.mkdir(exist_ok=True)
-    model_obj.model.save_model(artifact_dir / "model.xgb")
+    model_obj.model.save_model(artifact_dir / f"model_batch{batch_num}.xgb")
     joblib.dump(preprocessor_obj, artifact_dir / "preprocessor.joblib")
-    with open(artifact_dir / "config.json", "w") as f:
-        json.dump(config_obj, f, indent=4)
-    joblib.dump({'validator': validator_obj,
-                 'metrics': {
-                     'holdout': metrics['holdout'],
-                     'cv': metrics['cv'],
-                     'timeseries': metrics['timeseries']
-                 }}, artifact_dir / "validation_artifacts.joblib")
-    with open(artifact_dir / "requirements.txt", "w") as f:
-        f.write("\n".join([
-            "xgboost==1.7.6",
-            "scikit-learn==1.2.2",
-            "pandas==2.0.3",
-            "shap==0.42.1",
-            "lime==0.2.0",
-            "scipy==1.10.1"
-        ]))
-    logger.info(f"Artifacts saved to {artifact_dir}")
+
+    metrics_entry = {
+        "num": batch_num,
+        **metrics
+    }
+
+    # Загрузка существующих данных
+    history = []
+    best_mae = float("inf")
+    if Path(artifact_dir/"metric_his.json").exists():
+        with open(artifact_dir/"metric_his.json", "r") as f:
+            try:
+                history = json.load(f)
+                best_mae = min([entry["holdout"]["mae"] for entry in history])
+            except json.JSONDecodeError:
+                history = []
+
+    if metrics["holdout"]["mae"] < best_mae:
+        model_obj.model.save_model(artifact_dir / "model.xgb")
+    # Добавление новой записи
+    history.append(metrics_entry)
+
+    with open(artifact_dir/"metric_his.json", "w") as f:
+        json.dump(history, f, indent=2)
+
+    # with open(artifact_dir / "config.json", "w") as f:
+    #     json.dump(config_obj, f, indent=4)
+    # joblib.dump({'validator': validator_obj,
+    #              'metrics': {
+    #                  'holdout': metrics['holdout'],
+    #                  'cv': metrics['cv'],
+    #                  'timeseries': metrics['timeseries']
+    #              }}, artifact_dir / "validation_artifacts.joblib")
+    # with open(artifact_dir / "requirements.txt", "w") as f:
+    #     f.write("\n".join([
+    #         "xgboost==1.7.6",
+    #         "scikit-learn==1.2.2",
+    #         "pandas==2.0.3",
+    #         "shap==0.42.1",
+    #         "lime==0.2.0",
+    #         "scipy==1.10.1"
+    #     ]))
+    # logger.info(f"Artifacts saved to {artifact_dir}")
 
     # save_artifacts(model, preprocessor, config, validator)
-
-if __name__ == "__main__":
-    try:
-        # Initial pipeline setup
-        data_loader = initialize_pipeline()
-        # main_data = data_loader.get_data()
-        model, preprocessor, X_test, y_test = train_initial_model(data_loader)
-        
-        # Initialize validator
-        # validator = ModelValidator({
-        #     'model_storage': CONFIG['model_storage'],
-        #     'random_state': CONFIG['random_state'],
-        #     'target_column': CONFIG['target_column']
-        # })
-        
-        # # Initial validation
-        # val_metrics = validate_model(validator, data_loader.get_data())
-        
-        # Save initial artifacts
-        # save_artifacts(model, preprocessor, validator, val_metrics)
-
-        
-    except Exception as e:
-        logger.error(f"Initial pipeline failed: {e}")
-        sys.exit(1)
