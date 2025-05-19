@@ -1,6 +1,6 @@
 # config.py
 import json
-with open('config.json', 'r') as f:
+with open('model_artifacts/config.json', 'r') as f:
     CONFIG = json.load(f)
 DATA_LOADER_PARAMS = {
     "path": r"DataLoader",  # Путь к модулю данных
