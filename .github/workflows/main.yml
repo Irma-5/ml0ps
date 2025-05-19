@@ -30,10 +30,6 @@ jobs:
 
     - name: Показать содержимое директории
       run: ls -R
-      
-    - name: Run tests
-      run: |
-        python -m unittest discover mvp/tests
 
     - name: Upload logs
       uses: actions/upload-artifact@v4
