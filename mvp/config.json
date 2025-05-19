@@ -1,0 +1,13 @@
+{
+        "model_storage": "./model_artifacts",
+        "preprocessor_path": "./model_artifacts",
+        "model_path": "./model_artifacts/model",
+        "random_state": 42,
+        "test_size": 0.2,
+        "target_column": "time",
+        "hyperparam_tuning": 0,
+        "cv_folds": 3,
+        "n_iter": 20,
+        "year_to_split": 2010, 
+        "num_batch": 10
+}
