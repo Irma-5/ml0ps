@@ -159,9 +159,9 @@ def update(batch_number=None):
         
         # Initial validation
         val_metrics = validate_model(validator, data_loader.get_data())
-        print("Making beauty with lime")
-        feature_names = preprocessor.feature_names
-        explain_with_lime(X_up_train, X_up_test,model.predict, feature_names=feature_names)
+        #print("Making beauty with lime")
+        #feature_names = preprocessor.feature_names
+        #explain_with_lime(X_up_train, X_up_test,model.predict, feature_names=feature_names)
         save_artifacts(model, preprocessor, CONFIG, validator,val_metrics,batch_num=int(data_loader.step))
         with open('model.pkl', 'wb') as f:
             pickle.dump(model, f)
