@@ -51,7 +51,7 @@ jobs:
       with:
         workflow: cron_new_new.yml
         name: conf
-        path: .
+        path: ./model_artifacts
         workflow_conclusion: success
         branch: main
       continue-on-error: true
@@ -121,7 +121,7 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: conf
-        path: config.json
+        path: ./model_artifacts/config.json
 
     - name: Upload dataloader
       uses: actions/upload-artifact@v4
