@@ -51,7 +51,7 @@ jobs:
       with:
         workflow: crron.yml
         name: preprocessor
-        path: ./preprocessors
+        path: .
         workflow_conclusion: success
         branch: main
       continue-on-error: true
@@ -121,4 +121,4 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: preprocessor
-        path: ./preprocessors/preprocessor.pkl
+        path: preprocessor.pkl
